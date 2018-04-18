@@ -119,7 +119,7 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
      this.maxTopItem=7;
      this.expandTopMenu=true;
      
-     this.menuTempalte='<li><a class="p_1" target="main" onclick="return bg.Go(this,null)" href="{menu.entry}">{menu.title}</a></li>';
+     this.menuTempalte='<li><a class="p_1" target="main" onclick="return bg.Go(this,\'main\')" href="{menu.entry}">{menu.title}</a></li>';
      if(document.getElementById('main').tagName!='DIV'){
         this.menuTempalte='<li><a class="p_1" target="main" href="{menu.entry}">{menu.title}</a></li>';
      }
@@ -133,6 +133,7 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
         var app = this.apps[i];
         if(app.name==this.appName){
           jQuery('#app_nav_bar').siblings().html(app.title+'<b class="caret"></b>');
+          jQuery('#appName').text(app.title);
         }else{
           appendHtml = this.appTemplate.replace('{app.url}',app.url.replace('{openurp.webapp}',this.webappBase));
           appendHtml = appendHtml.replace('{app.title}',app.title);
@@ -189,6 +190,9 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
       jQuery("#topMenu"+idx).addClass("active");
       this.addMenus(jQuery('#menu_ul'),this.menus[idx].children)
       $('.menu').initMenu();
+      if(!jQuery('#toggleButton').is(':hidden')){
+        jQuery('#toggleButton').click();
+      }
     }
 
     this.init=function(){

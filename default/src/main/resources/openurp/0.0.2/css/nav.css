@@ -1,10 +1,16 @@
+#leftTD{
+  width: 150px;
+  height:100%;
+  padding-right: 0px;
+}
+
 /**Nav scroll box**/
 ul.menu{
   list-style-type:none;
   margin: 0;
   padding: 0;
   width: 150px;
-  /*background:#ffffff;*/
+  font-size:13px;
 }
 
 ul.menu ul {
@@ -125,4 +131,10 @@ ul.menu li a.active{
         border-right:6px solid rgba(0, 0, 0, 0.6);
     top:50%;
     position:absolute;
+}
+
+@media (min-width:900px) {
+  .appName{
+    display: none;
+  }
 }
