@@ -9,7 +9,7 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
      
      this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
      if(document.getElementById('main').tagName!='DIV'){
-        this.menuTempalte='<li><a target="main" href="{menu.entry}">{menu.title}</a></li>';
+        this.menuTempalte='<li><a target="main" href="{menu.entry}"><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
      }
      this.foldTemplate='<li style="margin:0px;" class="{active_class} treeview"><a href="javascript:void(0)"><i class="fa fa-list"></i><span>{menu.title}</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu" id="menu{menu.id}"></ul></li>'
      this.appTemplate='<li class="{active_class}"><a href="{app.url}" target="_top">{app.title}</a></li>';
@@ -64,17 +64,27 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
             jQuery("body").addClass("hold-transition sidebar-mini skin-blue");
             jQuery("ul.sidebar-menu li a").click(function() {
               if(this.href=="javascript:void(0)"){
-                jQuery("ul.tree li.active").removeClass('active');
+                jQuery(this).parent('li').siblings().removeClass('active');
                 jQuery(this).parent('li').addClass('active');
+                adjustContentWrapperHeight();
               }else{
-                jQuery("ul.treeview-menu li.active").removeClass('active');
+                jQuery(this).parent('li').siblings().removeClass('active');
                 jQuery(this).parent('li').addClass('active');
               }
             });
+            adjustContentWrapperHeight();
           });
      }
    }
 
+  function adjustContentWrapperHeight(){
+    // why 11 so strange.
+    if($('.content-wrapper').height() < (document.getElementById('menu_ul').scrollHeight+11)){
+      $('.content-wrapper').height((document.getElementById('menu_ul').scrollHeight+11));
+    }
+  }
+
   function toggleAppbar(){
      jQuery('#app_nav_bar').show()
   }
+
