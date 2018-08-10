@@ -15,7 +15,7 @@
   <properties>
     <bundle.symbolicName>org.openurp.theme.default</bundle.symbolicName>
     <bundle.namespace>org.openurp.theme.default</bundle.namespace>
-    <bundle.code>openurp_default</bundle.code>
+    <bundle.code>openurp-default</bundle.code>
   </properties>
 
 </project>
