@@ -8,14 +8,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openurp.theme</groupId>
   <artifactId>openurp-theme-default</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.4</version>
   <packaging>jar</packaging>
   <name>Openurp Theme Default</name>
 
   <properties>
     <bundle.symbolicName>org.openurp.theme.default</bundle.symbolicName>
     <bundle.namespace>org.openurp.theme.default</bundle.namespace>
-    <bundle.code>openurp_default</bundle.code>
+    <bundle.code>openurp-default</bundle.code>
   </properties>
 
 </project>

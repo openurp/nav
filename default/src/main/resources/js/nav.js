@@ -1,10 +1,8 @@
 
-function UrpNav(app,apps,menus,params){
-     this.appName=app.name;
+function UrpNav(app,apps,menus){
+     this.app=app;
      this.apps=apps;
      this.menus=menus;
-     this.contextPath=app.contextPath;
-     this.params=params;
      this.maxTopItem=7;
      
      this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
@@ -19,7 +17,7 @@ function UrpNav(app,apps,menus,params){
       var appItem='';
       for(var i=0;i<this.apps.length;i++){
         var app = this.apps[i];
-        if(app.name==this.appName){
+        if(app.name==this.app.name){
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
         }
         if(topItemCount == this.maxTopItem){
@@ -30,7 +28,7 @@ function UrpNav(app,apps,menus,params){
         }
         appItem = this.appTemplate.replace('{app.url}',this.processUrl(app.url));
         appItem = appItem.replace('{app.title}',app.title);
-        appItem = appItem.replace('{active_class}',app.name==this.appName?"active":"");
+        appItem = appItem.replace('{active_class}',app.name==this.app.name?"active":"");
         jqueryElem.append(appItem);
         topItemCount +=1;
       }
@@ -38,8 +36,8 @@ function UrpNav(app,apps,menus,params){
 
     this.processUrl=function(url){
       if(url.indexOf('{') == -1) return url;
-      for(var name in this.params){
-        url = url.replace('{'+name+'}',params[name]);
+      for(var name in this.app.params){
+        url = url.replace('{'+name+'}',this.app.params[name]);
       }
       return url;
     }
@@ -59,7 +57,7 @@ function UrpNav(app,apps,menus,params){
         }else{
           menuItem = this.menuTempalte.replace('{menu.id}',menu.id);
           menuItem = menuItem.replace('{menu.title}',menu.title);
-          menuItem = menuItem.replace('{menu.entry}',this.contextPath+this.processUrl(menu.entry));
+          menuItem = menuItem.replace('{menu.entry}',this.app.contextPath+this.processUrl(menu.entry));
           jqueryElem.append(menuItem);
         }
       }
