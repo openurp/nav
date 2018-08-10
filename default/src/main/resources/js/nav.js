@@ -1,10 +1,8 @@
 
-function UrpNav(appName,apps,menus,webappBase,contextPath){
-     this.appName=appName;
+function UrpNav(app,apps,menus){
+     this.app=app;
      this.apps=apps;
      this.menus=menus;
-     this.webappBase=webappBase;
-     this.contextPath=contextPath;
      this.maxTopItem=7;
      
      this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
@@ -16,10 +14,10 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
 
      this.addApps = function(jqueryElem){
       var topItemCount=0;
-      var appendHtml='';
+      var appItem='';
       for(var i=0;i<this.apps.length;i++){
         var app = this.apps[i];
-        if(app.name==this.appName){
+        if(app.name==this.app.name){
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
         }
         if(topItemCount == this.maxTopItem){
@@ -28,31 +26,39 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
         if(topItemCount >= this.maxTopItem ){
           jqueryElem = jQuery('#topMenuMore');
         }
-        appendHtml = this.appTemplate.replace('{app.url}',app.url.replace('{openurp.webapp}',this.webappBase));
-        appendHtml = appendHtml.replace('{app.title}',app.title);
-        appendHtml = appendHtml.replace('{active_class}',app.name==this.appName?"active":"");
-        jqueryElem.append(appendHtml);
+        appItem = this.appTemplate.replace('{app.url}',this.processUrl(app.url));
+        appItem = appItem.replace('{app.title}',app.title);
+        appItem = appItem.replace('{active_class}',app.name==this.app.name?"active":"");
+        jqueryElem.append(appItem);
         topItemCount +=1;
       }
+    }
+
+    this.processUrl=function(url){
+      if(url.indexOf('{') == -1) return url;
+      for(var name in this.app.params){
+        url = url.replace('{'+name+'}',this.app.params[name]);
+      }
+      return url;
     }
 
     this.addMenus=function(jqueryElem,menus){
       jqueryElem.empty();
       if(!menus) menus=this.menus;
-      var appendHtml='';
+      var menuItem='';
       for(var i=0;i<menus.length;i++){
         var menu = menus[i];
         if(menu.children){
-          appendHtml = this.foldTemplate.replace('{menu.id}',menu.id);
-          appendHtml = appendHtml.replace('{menu.title}',menu.title);
-          appendHtml = appendHtml.replace('{active_class}',(i==0)?"active menu-open":"");
-          jqueryElem.append(appendHtml);
+          menuItem = this.foldTemplate.replace('{menu.id}',menu.id);
+          menuItem = menuItem.replace('{menu.title}',menu.title);
+          menuItem = menuItem.replace('{active_class}',(i==0)?"active menu-open":"");
+          jqueryElem.append(menuItem);
           this.addMenus(jQuery('#menu'+menu.id),menu.children);
         }else{
-          appendHtml = this.menuTempalte.replace('{menu.id}',menu.id);
-          appendHtml = appendHtml.replace('{menu.title}',menu.title);
-          appendHtml = appendHtml.replace('{menu.entry}',this.contextPath+menu.entry);
-          jqueryElem.append(appendHtml);
+          menuItem = this.menuTempalte.replace('{menu.id}',menu.id);
+          menuItem = menuItem.replace('{menu.title}',menu.title);
+          menuItem = menuItem.replace('{menu.entry}',this.app.contextPath+this.processUrl(menu.entry));
+          jqueryElem.append(menuItem);
         }
       }
     }
@@ -83,8 +89,3 @@ function UrpNav(appName,apps,menus,webappBase,contextPath){
       $('.content-wrapper').height((document.getElementById('menu_ul').scrollHeight+11));
     }
   }
-
-  function toggleAppbar(){
-     jQuery('#app_nav_bar').show()
-  }
-
