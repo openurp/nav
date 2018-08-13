@@ -22,6 +22,7 @@ function UrpNav(app,apps,menus,params){
           var domainTitle=app.title;
           if(app.domain && app.domain.title) domainTitle=app.domain.title
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
+          jQuery('.logo').each(function (i,e){e.href=document.location})
         }
         if(topItemCount == this.maxTopItem && this.apps.length > this.maxTopItem){
           jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
