@@ -1,9 +1,9 @@
 
-function UrpNav(app,apps,menus){
+function UrpNav(app,apps,menus,params){
      this.app=app;
      this.apps=apps;
      this.menus=menus;
-     this.maxTopItem=7;
+     this.maxTopItem=8;
      
      this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
      if(document.getElementById('main').tagName!='DIV'){
@@ -15,15 +15,20 @@ function UrpNav(app,apps,menus){
      this.addApps = function(jqueryElem){
       var topItemCount=0;
       var appItem='';
+      var topMenuMoreHappened=false;
       for(var i=0;i<this.apps.length;i++){
         var app = this.apps[i];
         if(app.name==this.app.name){
-          jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
+          var domainTitle=app.title;
+          if(app.domain && app.domain.title) domainTitle=app.domain.title
+          jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
+          jQuery('.logo').each(function (i,e){e.href=document.location})
         }
-        if(topItemCount == this.maxTopItem){
+        if(topItemCount == this.maxTopItem && this.apps.length > this.maxTopItem){
           jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
+          topMenuMoreHappened=true;
         }
-        if(topItemCount >= this.maxTopItem ){
+        if(topMenuMoreHappened){
           jqueryElem = jQuery('#topMenuMore');
         }
         appItem = this.appTemplate.replace('{app.url}',this.processUrl(app.url));
@@ -36,8 +41,8 @@ function UrpNav(app,apps,menus){
 
     this.processUrl=function(url){
       if(url.indexOf('{') == -1) return url;
-      for(var name in this.app.params){
-        url = url.replace('{'+name+'}',this.app.params[name]);
+      for(var name in this.params){
+        url = url.replace('{'+name+'}',this.params[name]);
       }
       return url;
     }
