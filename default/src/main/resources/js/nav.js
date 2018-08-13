@@ -3,6 +3,7 @@ function UrpNav(app,apps,menus,params){
      this.app=app;
      this.apps=apps;
      this.menus=menus;
+     this.params=params;
      this.maxTopItem=8;
      
      this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
