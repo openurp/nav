@@ -1,5 +1,16 @@
+  function messageCallBack(c){
+    jQuery('#newly-message-count').text(c)
+  }
 
-function UrpNav(app,apps,menus,params){
+  function adjustContentWrapperHeight(){
+    // why 11 so strange.
+    if($('.content-wrapper').height() < (document.getElementById('menu_ul').scrollHeight+11)){
+      $('.content-wrapper').height((document.getElementById('menu_ul').scrollHeight+11));
+    }
+  }
+
+function UrpNav(home,app,apps,menus,params){
+     this.home=home;
      this.app=app;
      this.apps=apps;
      this.menus=menus;
@@ -17,15 +28,29 @@ function UrpNav(app,apps,menus,params){
       var topItemCount=0;
       var appItem='';
       var topMenuMoreHappened=false;
+      var allApps=[home];
       for(var i=0;i<this.apps.length;i++){
         var app = this.apps[i];
+        if(app.name==this.home.name){
+           continue;
+           home.title=app.title;
+           home.url=app.url;
+        }else{
+          allApps.push(app);
+        }
+      }
+      for(var i=0;i<allApps.length;i++){
+        var app = allApps[i];
+        if(app.name==this.home.name && i>1){
+            continue;
+        }
         if(app.name==this.app.name){
           var domainTitle=app.title;
           if(app.domain && app.domain.title) domainTitle=app.domain.title
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
           jQuery('.logo').each(function (i,e){e.href=document.location})
         }
-        if(topItemCount == this.maxTopItem && this.apps.length > this.maxTopItem){
+        if(topItemCount == this.maxTopItem && allApps.length > this.maxTopItem){
           jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
           topMenuMoreHappened=true;
         }
@@ -69,6 +94,18 @@ function UrpNav(app,apps,menus,params){
       }
     }
 
+    this.fetchMessages=function(){
+        jQuery.ajax({
+            url: this.params['openurp.webapp']+'/platform/user/message/newly?callback=messageCallBack',cache:false,
+            type: "GET",dataType: "html",
+            complete: function( jqXHR) {
+                try{
+                  jQuery("#newly-message").html(jqXHR.responseText);
+                }catch(e){alert(e)}
+            }
+        });
+     }
+
     this.init=function(){
         this.addApps(jQuery('#app_nav_bar'));
         this.addMenus(jQuery('#menu_ul'),menus);
@@ -86,12 +123,8 @@ function UrpNav(app,apps,menus,params){
             });
             adjustContentWrapperHeight();
           });
+      this.fetchMessages();
      }
-   }
 
-  function adjustContentWrapperHeight(){
-    // why 11 so strange.
-    if($('.content-wrapper').height() < (document.getElementById('menu_ul').scrollHeight+11)){
-      $('.content-wrapper').height((document.getElementById('menu_ul').scrollHeight+11));
-    }
-  }
+   }
+  
