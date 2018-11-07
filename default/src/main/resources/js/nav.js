@@ -25,6 +25,35 @@ function UrpNav(home,defaultApp,menus,params){
      this.appTemplate='<li class="{active_class}"><a href="{app.url}" target="_top">{app.title}</a></li>';
      this.appNavTemplate='<li class="{active_class}"><a href="{app.url}" id="app_{app.name}" onclick="urpNav.changeApp(this);return false;">{app.title}</a></li>';
 
+     this.processUrl=function(url){
+         if(url.indexOf('{') == -1) return url;
+         for(var name in this.params){
+           url = url.replace('{'+name+'}',this.params[name]);
+         }
+         return url;
+     }
+
+     this.hostName=function(u1){
+       var slashIdx = u1.indexOf('//');
+       if(-1==slashIdx){
+         slashIdx=0;
+       }else{
+         slashIdx += 2;
+       }
+       var endIdx= u1.indexOf(':',slashIdx)
+       if(-1 == endIdx){
+         endIdx= u1.indexOf('/',slashIdx)
+       }
+       if(-1 == endIdx){
+         endIdx= u1.length
+       }
+       return u1.substring(slashIdx,endIdx);
+     }
+
+     this.sameDomain = function (u1,u2){
+       return this.hostName(u1)== this.hostName(u2);
+     }
+
      for(var i=0;i<menus.length;i++){
        var app = menus[i].app;
        this.appMenus[app.name]=menus[i].menus;
@@ -39,6 +68,10 @@ function UrpNav(home,defaultApp,menus,params){
        }
        if(app.base.endsWith("/")){
          app.base=app.base.substring(0,app.base.length-1);
+       }
+       app.base = this.processUrl(app.base);
+       if(!this.sameDomain(this.defaultApp.base,app.base)){
+        app.embeddable=false;
        }
      }
 
@@ -57,7 +90,7 @@ function UrpNav(home,defaultApp,menus,params){
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
           jQuery('.logo').each(function (i,e){e.href=document.location})
         }
-        if(topItemCount == this.maxTopItem && allApps.length > this.maxTopItem){
+        if(topItemCount == this.maxTopItem && this.apps.length > this.maxTopItem){
           jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
           topMenuMoreHappened=true;
         }
@@ -77,14 +110,6 @@ function UrpNav(home,defaultApp,menus,params){
         jqueryElem.append(appItem);
         topItemCount +=1;
       }
-    }
-
-    this.processUrl=function(url){
-      if(url.indexOf('{') == -1) return url;
-      for(var name in this.params){
-        url = url.replace('{'+name+'}',this.params[name]);
-      }
-      return url;
     }
 
     this.changeApp=function(ele){
