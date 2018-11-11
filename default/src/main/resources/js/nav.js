@@ -54,6 +54,9 @@ function UrpNav(home,defaultApp,menus,params){
        return this.hostName(u1)== this.hostName(u2);
      }
 
+     if(!this.defaultApp.navStyle){
+       this.defaultApp.navStyle="unkown";
+     }
      for(var i=0;i<menus.length;i++){
        var app = menus[i].app;
        this.appMenus[app.name]=menus[i].menus;
@@ -70,8 +73,12 @@ function UrpNav(home,defaultApp,menus,params){
          app.base=app.base.substring(0,app.base.length-1);
        }
        app.base = this.processUrl(app.base);
+       app.embeddable=true;
+       if(app.navStyle != this.defaultApp.navStyle){
+         app.embeddable=false;
+       }
        if(!this.sameDomain(this.defaultApp.base,app.base)){
-        app.embeddable=false;
+         app.embeddable=false;
        }
      }
 
