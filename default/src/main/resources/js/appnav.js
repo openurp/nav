@@ -15,9 +15,9 @@
     };
   }
 
-function UrpNav(home,defaultApp,menus,params){
+function UrpAppNav(home,curApp,menus,params){
      this.home=home;
-     this.defaultApp=defaultApp;
+     this.curApp=curApp;
      this.appMenus={};
      this.apps=[home];
      this.params=params;
@@ -29,7 +29,7 @@ function UrpNav(home,defaultApp,menus,params){
      }
      this.foldTemplate='<li style="margin:0px;" class="{active_class} treeview"><a href="javascript:void(0)"><i class="fa fa-list"></i><span>{menu.title}</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu" id="menu{menu.id}"></ul></li>'
      this.appTemplate='<li class="{active_class}"><a href="{app.url}" target="_top">{app.title}</a></li>';
-     this.appNavTemplate='<li class="{active_class}"><a href="{app.url}" id="app_{app.name}" onclick="urpNav.changeApp(this);return false;">{app.title}</a></li>';
+     this.appNavTemplate='<li class="{active_class}"><a href="{app.url}" id="app_{app.name}" onclick="urpAppNav.changeApp(this);return false;">{app.title}</a></li>';
 
      this.processUrl=function(url){
          if(url.indexOf('{') == -1) return url;
@@ -60,8 +60,11 @@ function UrpNav(home,defaultApp,menus,params){
        return this.hostName(u1)== this.hostName(u2);
      }
 
-     if(!this.defaultApp.navStyle){
-       this.defaultApp.navStyle="unkown";
+     if(!this.curApp.navStyle){
+       this.curApp.navStyle="unkown";
+     }
+     if((typeof menus)=="object" && menus.domain){
+       menus=menus.appMenus;
      }
      for(var i=0;i<menus.length;i++){
        var app = menus[i].app;
@@ -69,8 +72,8 @@ function UrpNav(home,defaultApp,menus,params){
        if(app.name==home.name){
          home.title=app.title;
          home.url=app.url;
-       } else if(app.name==this.defaultApp.name){
-         app.base=this.defaultApp.base;
+       } else if(app.name==this.curApp.name){
+         app.base=this.curApp.base;
          this.apps.push(app);
        } else {
          this.apps.push(app);
@@ -80,10 +83,10 @@ function UrpNav(home,defaultApp,menus,params){
        }
        app.base = this.processUrl(app.base);
        app.embeddable=true;
-       if(app.navStyle != this.defaultApp.navStyle){
+       if(app.navStyle != this.curApp.navStyle){
          app.embeddable=false;
        }
-       if(!this.sameDomain(this.defaultApp.base,app.base)){
+       if(!this.sameDomain(this.curApp.base,app.base)){
          app.embeddable=false;
        }
      }
@@ -97,7 +100,7 @@ function UrpNav(home,defaultApp,menus,params){
         if(app.name==this.home.name && i>1){
             continue;
         }
-        if(app.name==this.defaultApp.name){
+        if(app.name==this.curApp.name){
           var domainTitle=app.title;
           if(app.domain && app.domain.title) domainTitle=app.domain.title
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
@@ -114,11 +117,11 @@ function UrpNav(home,defaultApp,menus,params){
           appItem = this.appNavTemplate.replace('{app.name}',app.name);
           appItem = appItem.replace('{app.title}',app.title);
           appItem = appItem.replace('{app.url}',this.processUrl(app.url));
-          appItem = appItem.replace('{active_class}',app.name==this.defaultApp.name?"active":"");
+          appItem = appItem.replace('{active_class}',app.name==this.curApp.name?"active":"");
         }else{
           appItem = this.appTemplate.replace('{app.url}',this.processUrl(app.url));
           appItem = appItem.replace('{app.title}',app.title);
-          appItem = appItem.replace('{active_class}',app.name==this.defaultApp.name?"active":"");
+          appItem = appItem.replace('{active_class}',app.name==this.curApp.name?"active":"");
         }
         jqueryElem.append(appItem);
         topItemCount +=1;
@@ -133,7 +136,7 @@ function UrpNav(home,defaultApp,menus,params){
     }
 
     this.addAppMenus=function(appName){
-      if(!appName) appName=this.defaultApp.name;
+      if(!appName) appName=this.curApp.name;
       var targetApp=null
       for(var i=0;i<this.apps.length;i++){
         if(this.apps[i].name==appName){
