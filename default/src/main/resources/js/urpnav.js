@@ -136,6 +136,7 @@
        for(i=0;i < this.menus.length; i++){
          var appMenus=this.menus[i];
          if(appMenus.domain.name==name){
+           document.title=appMenus.domain.title;
            this.addMenus(jQuery('#menu_ul'),appMenus.appMenus);
            this.currentDomainName=name;
            break;
