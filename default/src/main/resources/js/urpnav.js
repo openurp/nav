@@ -257,11 +257,11 @@ $(function () {
   function Nav(app,home,domainMenus,params){
     this.home=home;
     this.app=app;
-    this.apps=[home];
+    this.apps=[];
     this.domains=[];
     this.appMenus={};
     this.menuDomId="menu_ul";
-    this.navDomId="app_nav_bar";
+    this.navDomId="top_nav_bar";
     this.sysName=null;
     if(params){
       if(params.menuDomId){
@@ -330,6 +330,7 @@ $(function () {
           } else if(app.name==this.app.name){
             app.base=this.app.base;
             this.app.domain=domain;
+            this.app.title=app.title;
             this.app.id=app.id;
             this.apps.push(app);
           } else {
@@ -377,6 +378,25 @@ $(function () {
           jqueryElem.append(menuItem);
         }
       }
+    },
+    activate:function(){
+      var that=this;
+      jQuery("#"+this.menuDomId+" li a").click(function() {
+        if(this.href=="javascript:void(0)"){
+          jQuery(this).parent('li').siblings().removeClass('active');
+          jQuery(this).parent('li').addClass('active');
+          // why 11 so strange.
+           if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
+             $('#main').height((document.getElementById(that.menuDomId).scrollHeight+11));
+           }
+        }else{
+          jQuery(this).parent('li').siblings().removeClass('active');
+          jQuery(this).parent('li').addClass('active');
+        }
+      });
+      if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
+        $('#main').height((document.getElementById(that.menuDomId).scrollHeight+11));
+      }
     }
   }
 
@@ -388,10 +408,13 @@ $(function () {
     /**
      * 向顶层添加domain
      */
-    this.addTopsDomain = function(jqueryElem){
+    this.addTopDomains = function(jqueryElem){
       var appItem='';
       jQuery('#appName').html(jQuery('#appName').siblings(0).html()+this.nav.sysName);
       jQuery('.logo').each(function (i,e){e.href=document.location})
+
+      var domainToggle='<a href="javascript:urpnav.toggleTopBar()" class="appbar-toggle" role="button"><span class="sr-only"></span></a>';
+      jqueryElem.before(domainToggle);
 
       var app=this.nav.app;
       appItem = this.portalTemplate.replace('{app.url}',this.nav.processUrl(app.url));
@@ -419,6 +442,7 @@ $(function () {
         if(domainMenu.domain.id==domainId){
           document.title=domainMenu.domain.title;
           this.nav.createMenus(jQuery('#'+this.nav.menuDomId),null,domainMenu.appMenus);
+          this.nav.activate();
           this.nav.currentDomainId=domainId;
           break;
         }
@@ -436,26 +460,34 @@ $(function () {
     /**
      * 向顶层添加app
      */
-    this.addTopsApp = function(jqueryElem){
+    this.addTopApps = function(jqueryElem){
       var topItemCount=0;
       var appItem='';
       var topMenuMoreHappened=false;
       var thisApp=this.nav.app;
+      var domainApps=[this.nav.home];
+      //过滤掉非所在domain的app
       for(var i=0;i<this.nav.apps.length;i++){
         var app =this.nav.apps[i];
-        if(app.name==this.nav.home.name && i>1){
+        if(app.name==this.nav.home.name){
           continue;
         }
         if(app.domain && thisApp.domain && app.domain.id != thisApp.domain.id){
           continue;
         }
+        domainApps.push(app);
+      }
+      var appToggle='<a href="javascript:urpnav.toggleTopBar()" class="appbar-toggle" role="button"><span class="sr-only"></span></a>';
+      jqueryElem.before(appToggle);
+      for(var i=0;i<domainApps.length;i++){
+        var app =domainApps[i];
         if(app.name==this.nav.app.name){
           var domainTitle=app.title;
           if(app.domain && app.domain.title) domainTitle=app.domain.title
           jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
-          jQuery('.logo').each(function (i,e){e.href=document.location})
+          jQuery('.main-header .logo').each(function (i,e){e.href=document.location})
         }
-        if(topItemCount == this.maxTopItem && this.apps.length > this.maxTopItem){
+        if(topItemCount == this.nav.maxTopItem && domainApps.length > this.nav.maxTopItem){
           jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
           topMenuMoreHappened=true;
         }
@@ -502,6 +534,7 @@ $(function () {
             }
           }
           this.nav.createMenus(jQuery('#'+this.nav.menuDomId),targetApp,appMenu);
+          this.nav.activate();
         }else{
           console.log("Cannot find menu for app "+targetApp.name);
         }
@@ -515,46 +548,120 @@ $(function () {
     }
   }
 
+
+  /**
+   * 导航栏和菜单栏都是app中的内容
+   */
+  function AppNav(nav){
+    this.nav=nav;
+    this.topMenuTemplate='<li class="{active_class}"  id="topMenu{menu.idx}"><a href="javascript:void(0)" onclick="urpnav.changeMenu({menu.idx})">{menu.title}</a></li>';
+    this.appTemplate='<li class="{active_class}"><a href="{app.url}" target="_top">{app.title}</a></li>';
+    /**
+     * 添加app导航和logo标题
+     */
+    this.addApps = function(jqueryElem){
+      var appDropNav='<ul class="nav navbar-nav"><li class="dropdown">' +
+                     '<a href="#" data-toggle="dropdown" style="display:inline" class="appbar-toggle" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"></a>' +
+                     '<ul id="app_drop_bar" class="dropdown-menu"></ul>'+
+                     '</li></ul>';
+      jqueryElem.before(appDropNav);
+      var appDropBarID="#app_drop_bar";
+      jqueryElem = jQuery(appDropBarID);
+      var appendHtml='';
+      var curDomainId=0;
+      for(var i=0;i<this.nav.apps.length;i++){
+        var app = this.nav.apps[i];
+        if(curDomainId ==0){
+          curDomainId=app.domain.id;
+        }else{
+          if(app.domain.id != curDomainId){
+            jqueryElem.append('<li role="separator" class="divider"></li>');
+            curDomainId=app.domain.id;
+          }
+        }
+        if(app.name==this.nav.app.name){//添加左侧的logo和标题
+          jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
+          jQuery('.main-header .logo').each(function (i,e){e.href=document.location})
+        }else{
+          appendHtml = this.appTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+          appendHtml = appendHtml.replace('{app.title}',app.title);
+          appendHtml = appendHtml.replace('{active_class}',app.name==this.appName?"active":"");
+          jqueryElem.append(appendHtml);
+        }
+      }
+    }
+
+    this.addTopMenus=function(jqueryElem){
+      jqueryElem.empty();
+      var topMenuCount=0;
+      var appendHtml='';
+      var menus=this.nav.appMenus[this.nav.app.name];
+      for(var i=0;i<menus.length;i++){
+        var menu = menus[i];
+        if(!menu.children || menu.children.length==0){
+          continue;
+        }
+        topMenuCount +=1;
+        if(topMenuCount == this.nav.maxTopItem){
+          jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
+        }
+        if(topMenuCount >= this.nav.maxTopItem ){
+          jqueryElem = jQuery('#topMenuMore');
+        }
+        appendHtml = this.topMenuTemplate.replace('{menu.title}',menu.title);
+        appendHtml = appendHtml.replace('{menu.idx}',i);
+        appendHtml = appendHtml.replace('{menu.idx}',i);
+        appendHtml = appendHtml.replace('{active_class}',(i==0)?"active":"");
+        jqueryElem.append(appendHtml);
+      }
+    }
+
+    this.displayTopMenus=function(idx){
+      jQuery("#topMenu"+idx).siblings().removeClass("active");
+      jQuery("#topMenu"+idx).addClass("active");
+      var menus=this.nav.appMenus[this.nav.app.name]
+      var children = menus[idx].children;
+      if(children){
+        if(children.length>0 && (!children[0].children || children[0].children.length>0)){
+          menus=[menus[idx]];
+        }else{
+          menus=children;
+        }
+      }
+      this.nav.createMenus(jQuery('#'+this.nav.menuDomId),this.nav.app,menus);
+      this.nav.activate();
+    }
+
+  }
+
   var urpnav = {
     navMenu:{},
 
-    createPortalNav:function(home,app,domainMenus,params,config){
-      var nav= new Nav(home,app,domainMenus,params,config);
+    createPortalNav:function(app,home,domainMenus,params,config){
+      var nav= new Nav(app,home,domainMenus,params,config);
       var portal= new PortalNav(nav);
-      portal.addTopsDomain(jQuery('#'+nav.navDomId));
+      portal.addTopDomains(jQuery('#'+nav.navDomId));
       portal.displayDomainMenus(nav.domains[0].id);
       this.navMenu=portal;
-      this.activate(nav);
     },
 
-    createDomainNav:function(home,app,domainMenus,params,config){
-      var nav= new Nav(home,app,domainMenus,params,config);
+    createDomainNav:function(app,home,domainMenus,params,config){
+      var nav= new Nav(app,home,domainMenus,params,config);
       var domain= new DomainNav(nav);
-      domain.addTopsApp(jQuery('#'+nav.navDomId));
+      domain.addTopApps(jQuery('#'+nav.navDomId));
       domain.displayAppMenus(nav.app.id);
       this.navMenu=domain;
-      this.activate(nav);
     },
 
-    activate:function (nav) {
-      jQuery("body").addClass("hold-transition sidebar-mini skin-blue");
-      jQuery("#"+nav.menuDomId+" li a").click(function() {
-        if(this.href=="javascript:void(0)"){
-          jQuery(this).parent('li').siblings().removeClass('active');
-          jQuery(this).parent('li').addClass('active');
-          // why 11 so strange.
-           if($('.content-wrapper').height() < (document.getElementById(nav.menuDomId).scrollHeight+11)){
-             $('.content-wrapper').height((document.getElementById(nav.menuDomId).scrollHeight+11));
-           }
-        }else{
-          jQuery(this).parent('li').siblings().removeClass('active');
-          jQuery(this).parent('li').addClass('active');
-        }
-      });
-      if($('.content-wrapper').height() < (document.getElementById(nav.menuDomId).scrollHeight+11)){
-        $('.content-wrapper').height((document.getElementById(nav.menuDomId).scrollHeight+11));
-      }
+    createAppNav:function(app,home,domainMenus,params,config){
+      var nav= new Nav(app,home,domainMenus,params,config);
+      var appNav= new AppNav(nav);
+      appNav.addApps(jQuery('#'+nav.navDomId));
+      appNav.addTopMenus(jQuery('#'+nav.navDomId));
+      appNav.displayTopMenus(0);
+      this.navMenu=appNav;
     },
+
     /**
      * 切换app的全局函数
      * @param id
@@ -591,6 +698,11 @@ $(function () {
       this.navMenu.nav.params['school']=p.schoolId;
       this.navMenu.displayCurrent();
     },
+
+    changeMenu:function(idx){
+      this.navMenu.displayTopMenus(idx);
+    },
+
     createProjectNav:function(){
       var projectSelectTemplate=
        '<li class="dropdown">' +
@@ -612,6 +724,7 @@ $(function () {
         jQuery('.navbar-custom-menu > .navbar-nav').prepend(projecthtml)
       }
     },
+
     fetchMessages:function(params){
       if(!urp.sameDomain(window.location.href,params['openurp.webapp'])){
         return;
@@ -625,7 +738,24 @@ $(function () {
             }catch(e){alert(e)}
         }
       });
+    },
+
+    setup:function (params) {
+      jQuery("body").addClass("hold-transition sidebar-mini skin-blue");
+      this.fetchMessages(params);
+    },
+
+    toggleTopBar:function(){
+      var bar=jQuery("#"+this.navMenu.nav.navDomId)
+      if(bar.is(":hidden")){
+        bar.css("margin","50px 0px 0px 0px")
+        bar.show();
+      }else{
+        bar.css("margin","00px 0px 0px 0px")
+        bar.hide();
+      }
     }
+
   }
 
   //register as a module

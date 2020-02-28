@@ -55,7 +55,7 @@ $(function () {
         var verified=false;
         if(profile.edu && profile.edu.projectId){
           for(var j=0;j<this.projects.length;j++){
-            if((this.projects[j].id+1)==profile.edu.projectId){
+            if(this.projects[j].id==profile.edu.projectId){
               verified=true;
               break;
             }
@@ -98,6 +98,7 @@ $(function () {
     sameDomain:function (u1,u2){
       return this.hostName(u1)== this.hostName(u2);
     },
+
     getCookie: function (name) {
       var nameEQ = name + "=";
       var ca = document.cookie.split(';');
@@ -108,6 +109,7 @@ $(function () {
       }
       return null;
     },
+
     deleteCookie:function( name, path, domain ) {
       if( getCookie( name ) ) {
         document.cookie = name + "=" +
