@@ -11,10 +11,24 @@ $(function () {
     this.changeProject=function(id){
       for(var i=0;i<this.projects.length;i++){
         if(this.projects[i].id==id){
-          var URP_EDU=encodeURIComponent('{"projectId":'+id+'}')
           var exdate=new Date();
           exdate.setDate(exdate.getDate()+7);
-          document.cookie="URP_EDU="+URP_EDU+";path=/edu/;expires="+exdate.toGMTString();
+
+          var cookie=urp.getCookie("URP_PROFILE")
+          var profile={}
+          if(cookie){
+            profile=JSON.parse(decodeURIComponent(cookie))
+            if(!profile.edu){
+              profile.edu={}
+            }
+            profile.edu.projectId=id;
+          }else{
+            profile={
+              "edu":{"projectId":id}
+            }
+          }
+          var URP_PROFILE=encodeURIComponent(JSON.stringify(profile))
+          document.cookie="URP_PROFILE="+URP_PROFILE+";path=/;expires="+exdate.toGMTString();
           jQuery('#project_switcher').html(this.projects[i].name + '<span class="caret"></span>');
           return this.projects[i];
           break;
@@ -35,8 +49,24 @@ $(function () {
       }
     }
     if(this.projects.length>0){
-
-      this.changeProject(this.projects[0].id);
+      var cookie=urp.getCookie("URP_PROFILE")
+      if(cookie){
+        var profile=JSON.parse(decodeURIComponent(cookie))
+        var verified=false;
+        if(profile.edu && profile.edu.projectId){
+          for(var j=0;j<this.projects.length;j++){
+            if((this.projects[j].id+1)==profile.edu.projectId){
+              verified=true;
+              break;
+            }
+          }
+        }
+        if(!verified){
+          this.changeProject(this.projects[0].id);
+        }
+      }else{
+        this.changeProject(this.projects[0].id);
+      }
     }
   }
 
@@ -67,6 +97,24 @@ $(function () {
 
     sameDomain:function (u1,u2){
       return this.hostName(u1)== this.hostName(u2);
+    },
+    getCookie: function (name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    },
+    deleteCookie:function( name, path, domain ) {
+      if( getCookie( name ) ) {
+        document.cookie = name + "=" +
+          ((path) ? ";path="+path:"")+
+          ((domain)?";domain="+domain:"") +
+          ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      }
     }
   }
 
