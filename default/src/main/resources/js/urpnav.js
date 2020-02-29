@@ -288,7 +288,30 @@ $(function () {
     this.params=params;
     this.maxTopItem=8;
 
-    this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
+    this.getIconClass=function(name){
+      if(name.indexOf("设置") > -1){
+        return "fa fa-gears";
+      }else if(name.endsWith("开关")){
+       return "fa fa-toggle-on";
+      }else if(name.endsWith("信息")){
+        return "fa fa-info-circle";
+      }else if(name.indexOf("查询") > -1){
+        return "fa fa-search";
+      }else if(name.indexOf("打印") > -1){
+        return "fa fa-print";
+      }else if(name.indexOf("统计") > -1){
+        return "fa fa-bar-chart";
+      }else if(name.indexOf("安排") > -1){
+        return "fa fa-calendar";
+      }else if(name.indexOf("排名") > -1){
+        return "fa fa-sort-amount-desc";
+      }else if(name.endsWith("表")){
+        return "fa fa-table";
+      }else{
+        return "fa fa-circle-o";
+      }
+    }
+    this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="{icon_class}"></i>{menu.title}</a></li>';
     if(document.getElementById('main').tagName!='DIV'){
       this.menuTempalte='<li><a target="main" href="{menu.entry}"><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
     }
@@ -301,6 +324,7 @@ $(function () {
     if(!this.sysName){
       this.sysName=this.app.title;
     }
+    jQuery("#"+this.menuDomId).addClass("sidebar-menu").tree();
   }
 
   Nav.prototype={
@@ -374,6 +398,7 @@ $(function () {
         }else{//menu
           menuItem = this.menuTempalte.replace('{menu.id}',menu.id);
           menuItem = menuItem.replace('{menu.title}',menu.title);
+          menuItem = menuItem.replace('{icon_class}',this.getIconClass(menu.title));
           menuItem = menuItem.replace('{menu.entry}',this.processUrl(app.base+menu.entry));
           jqueryElem.append(menuItem);
         }
@@ -413,7 +438,7 @@ $(function () {
       jQuery('#appName').html(jQuery('#appName').siblings(0).html()+this.nav.sysName);
       jQuery('.logo').each(function (i,e){e.href=document.location})
 
-      var domainToggle='<a href="javascript:urpnav.toggleTopBar()" class="appbar-toggle" role="button"><span class="sr-only"></span></a>';
+      var domainToggle='<a href="javascript:urpnav.toggleTopBar()" class="app-toggle" role="button"><span class="sr-only"></span></a>';
       jqueryElem.before(domainToggle);
 
       var app=this.nav.app;
@@ -477,7 +502,7 @@ $(function () {
         }
         domainApps.push(app);
       }
-      var appToggle='<a href="javascript:urpnav.toggleTopBar()" class="appbar-toggle" role="button"><span class="sr-only"></span></a>';
+      var appToggle='<a href="javascript:urpnav.toggleTopBar()" class="app-toggle" role="button"><span class="sr-only"></span></a>';
       jqueryElem.before(appToggle);
       for(var i=0;i<domainApps.length;i++){
         var app =domainApps[i];
@@ -561,7 +586,7 @@ $(function () {
      */
     this.addApps = function(jqueryElem){
       var appDropNav='<ul class="nav navbar-nav"><li class="dropdown">' +
-                     '<a href="#" data-toggle="dropdown" style="padding: 15px 15px;" class="appbar-toggle" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"></a>' +
+                     '<a href="#" data-toggle="dropdown" style="padding: 15px 15px;" class="app-toggle" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"></a>' +
                      '<ul id="app_drop_bar" class="dropdown-menu dropdown-menu multi-column columns-3"></ul>'+
                      '</li></ul>';
       jqueryElem.before(appDropNav);

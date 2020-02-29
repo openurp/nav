@@ -4,7 +4,7 @@
    width: 50px;
    height: 50px;
   }
- .topbar-toggle {
+ .app-toggle {
     float: left;
     background-color: transparent;
     background-image: none;
@@ -12,18 +12,18 @@
     font-family: fontAwesome;
     color: #fff;
  }
- .topbar-toggle:before {
+ .app-toggle:before {
     content: "\f00a";
  }
- .topbar-toggle:hover {
+ .app-toggle:hover {
     background-color: #367fa9;
     color: #f6f6f6;
      background: rgba(0, 0, 0, 0.1);
  }
- .topbar-toggle:focus,.topbar-toggle:active {
+ .app-toggle:focus,.app-toggle:active {
     background: transparent;
  }
- .topbar-toggle {
+ .app-toggle {
     display: none;
     color: #fff;
  }
@@ -31,7 +31,7 @@
     #top_nav_bar {
       display: none;
     }
-    .topbar-toggle {
+    .app-toggle {
       display:block;
     }
  }
