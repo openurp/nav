@@ -254,8 +254,8 @@ $(function () {
   * @domainMenus
   *    {domain:{},children:[],appMenus:[{app:{},menus:[]},{app:{},menus:[]}]}
   */
-  function Nav(app,home,domainMenus,params){
-    this.home=home;
+  function Nav(app,portal,domainMenus,params){
+    this.portal=portal;
     this.app=app;
     this.apps=[];
     this.domains=[];
@@ -324,9 +324,9 @@ $(function () {
             app.domain=domain;
           }
           this.appMenus[app.name]=childrenApps[i].menus;
-          if(app.name==this.home.name){
-            this.home.title=app.title;
-            this.home.url=app.url;
+          if(app.name==this.portal.name){
+            this.portal.title=app.title;
+            this.portal.url=app.url;
           } else if(app.name==this.app.name){
             app.base=this.app.base;
             this.app.domain=domain;
@@ -418,7 +418,7 @@ $(function () {
 
       var app=this.nav.app;
       appItem = this.portalTemplate.replace('{app.url}',this.nav.processUrl(app.url));
-      appItem = appItem.replace('{app.title}',this.nav.home.title);
+      appItem = appItem.replace('{app.title}',this.nav.portal.title);
       jqueryElem.append(appItem);
 
       for(var i=0;i < this.nav.domains.length; i++){
@@ -465,11 +465,11 @@ $(function () {
       var appItem='';
       var topMenuMoreHappened=false;
       var thisApp=this.nav.app;
-      var domainApps=[this.nav.home];
+      var domainApps=[this.nav.portal];
       //过滤掉非所在domain的app
       for(var i=0;i<this.nav.apps.length;i++){
         var app =this.nav.apps[i];
-        if(app.name==this.nav.home.name){
+        if(app.name==this.nav.portal.name){
           continue;
         }
         if(app.domain && thisApp.domain && app.domain.id != thisApp.domain.id){
@@ -561,34 +561,50 @@ $(function () {
      */
     this.addApps = function(jqueryElem){
       var appDropNav='<ul class="nav navbar-nav"><li class="dropdown">' +
-                     '<a href="#" data-toggle="dropdown" style="display:inline" class="appbar-toggle" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"></a>' +
-                     '<ul id="app_drop_bar" class="dropdown-menu"></ul>'+
+                     '<a href="#" data-toggle="dropdown" style="padding: 15px 15px;" class="appbar-toggle" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"></a>' +
+                     '<ul id="app_drop_bar" class="dropdown-menu dropdown-menu multi-column columns-3"></ul>'+
                      '</li></ul>';
       jqueryElem.before(appDropNav);
       var appDropBarID="#app_drop_bar";
       jqueryElem = jQuery(appDropBarID);
-      var appendHtml='';
       var curDomainId=0;
+      var columRows=Math.ceil(this.nav.apps.length/3);
+      var content='<div class="row">';
+      var columnApps=[[],[],[]]
       for(var i=0;i<this.nav.apps.length;i++){
-        var app = this.nav.apps[i];
-        if(curDomainId ==0){
-          curDomainId=app.domain.id;
-        }else{
-          if(app.domain.id != curDomainId){
-            jqueryElem.append('<li role="separator" class="divider"></li>');
+        columnApps[Math.floor(i / columRows)].push(this.nav.apps[i]);
+      }
+      for(var column=0;column<columnApps.length;column++){
+        var columnApp= columnApps[column];
+        var columnDiv='<div class="col-sm-4"><ul class="multi-column-dropdown">'
+        for(var i=0;i<columnApp.length;i++){
+          var app=columnApp[i];
+          if(curDomainId ==0){
             curDomainId=app.domain.id;
+          }else{
+            if(app.domain.id != curDomainId){
+              if(i>0){
+                columnDiv+='<li role="separator" class="divider"></li>';
+              }
+              curDomainId=app.domain.id;
+            }
+          }
+          if(app.name==this.nav.app.name){//添加左侧的logo和标题
+            jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
+            jQuery('.main-header .logo').each(function (i,e){e.href=document.location})
+            columnDiv += '<li class="active"><a style="color:blue" href="#">'+app.title+'</a></li>';
+          }else{
+            var appendHtml = this.appTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+            appendHtml = appendHtml.replace('{app.title}',app.title);
+            appendHtml = appendHtml.replace('{active_class}',"");
+            columnDiv+=appendHtml;
           }
         }
-        if(app.name==this.nav.app.name){//添加左侧的logo和标题
-          jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
-          jQuery('.main-header .logo').each(function (i,e){e.href=document.location})
-        }else{
-          appendHtml = this.appTemplate.replace('{app.url}',this.nav.processUrl(app.url));
-          appendHtml = appendHtml.replace('{app.title}',app.title);
-          appendHtml = appendHtml.replace('{active_class}',app.name==this.appName?"active":"");
-          jqueryElem.append(appendHtml);
-        }
+        columnDiv+="</ul></div>";
+        content += columnDiv;
       }
+      content+="</div>";
+      jqueryElem.append(content);
     }
 
     this.addTopMenus=function(jqueryElem){
@@ -637,24 +653,24 @@ $(function () {
   var urpnav = {
     navMenu:{},
 
-    createPortalNav:function(app,home,domainMenus,params,config){
-      var nav= new Nav(app,home,domainMenus,params,config);
+    createPortalNav:function(app,portal,domainMenus,params,config){
+      var nav= new Nav(app,portal,domainMenus,params,config);
       var portal= new PortalNav(nav);
       portal.addTopDomains(jQuery('#'+nav.navDomId));
       portal.displayDomainMenus(nav.domains[0].id);
       this.navMenu=portal;
     },
 
-    createDomainNav:function(app,home,domainMenus,params,config){
-      var nav= new Nav(app,home,domainMenus,params,config);
+    createDomainNav:function(app,portal,domainMenus,params,config){
+      var nav= new Nav(app,portal,domainMenus,params,config);
       var domain= new DomainNav(nav);
       domain.addTopApps(jQuery('#'+nav.navDomId));
       domain.displayAppMenus(nav.app.id);
       this.navMenu=domain;
     },
 
-    createAppNav:function(app,home,domainMenus,params,config){
-      var nav= new Nav(app,home,domainMenus,params,config);
+    createAppNav:function(app,portal,domainMenus,params,config){
+      var nav= new Nav(app,portal,domainMenus,params,config);
       var appNav= new AppNav(nav);
       appNav.addApps(jQuery('#'+nav.navDomId));
       appNav.addTopMenus(jQuery('#'+nav.navDomId));
