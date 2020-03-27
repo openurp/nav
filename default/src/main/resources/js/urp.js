@@ -1,41 +1,28 @@
 $(function () {
     'use strict'
 
-  var UrpProfiles = function(profiles){
-    this.projects=[]
-    /**
-    * 用于切换项目的代码
-    * @param profiles
-    * @returns
-    */
-    this.changeProject=function(id){
+  var UrpProfiles = function(profiles,profile){
+    this.projects=[];
+    this.profile=profile;
+    this.processProjectUrl = function(){
       for(var i=0;i<this.projects.length;i++){
-        if(this.projects[i].id==id){
-          var exdate=new Date();
-          exdate.setDate(exdate.getDate()+7);
-
-          var cookie=urp.getCookie("URP_PROFILE")
-          var profile={}
-          if(cookie){
-            profile=JSON.parse(decodeURIComponent(cookie))
-            if(!profile.edu){
-              profile.edu={}
-            }
-            profile.edu.projectId=id;
-          }else{
-            profile={
-              "edu":{"projectId":id}
-            }
-          }
-          var URP_PROFILE=encodeURIComponent(JSON.stringify(profile))
-          document.cookie="URP_PROFILE="+URP_PROFILE+";path=/;expires="+exdate.toGMTString();
-          jQuery('#project_switcher').html(this.projects[i].name + '<span class="caret"></span>');
-          return this.projects[i];
-          break;
+        var project= this.projects[i];
+        if(!project.url){
+          project.url= (location.origin + location.pathname +"?contextProjectId=" +project.id)
         }
       }
     }
-
+    this.project=function(){
+      if(this.profile && this.profile.edu.projectId){
+        for(var i=0;i<this.projects.length;i++){
+          var p = this.projects[i];
+          if(p.id == this.profile.edu.projectId){
+            return p;
+          }
+        }
+      }
+      return this.projects[0];
+    }
     if(profiles.length>0){
       for(var i=0;i< profiles.length;i++){
         var profile=profiles[i];
@@ -48,33 +35,14 @@ $(function () {
         }
       }
     }
-    if(this.projects.length>0){
-      var cookie=urp.getCookie("URP_PROFILE")
-      if(cookie){
-        var profile=JSON.parse(decodeURIComponent(cookie))
-        var verified=false;
-        if(profile.edu && profile.edu.projectId){
-          for(var j=0;j<this.projects.length;j++){
-            if(this.projects[j].id==profile.edu.projectId){
-              verified=true;
-              break;
-            }
-          }
-        }
-        if(!verified){
-          this.changeProject(this.projects[0].id);
-        }
-      }else{
-        this.changeProject(this.projects[0].id);
-      }
-    }
+    this.processProjectUrl();
   }
 
   var urp={
     profiles:{},
     api:"",
-    createProfiles:function(params){
-      this.profiles = new UrpProfiles(params);
+    createProfiles:function(params,currentProfile){
+      this.profiles = new UrpProfiles(params,currentProfile);
       return this.profiles;
     },
 
