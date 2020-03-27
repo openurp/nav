@@ -263,15 +263,22 @@ $(function () {
     this.menuDomId="menu_ul";
     this.navDomId="top_nav_bar";
     this.sysName=null;
+    this.params={};
+    this.maxTopItem=8;
     if(params){
-      if(params.menuDomId){
-        this.menuDomId=params.menuDomId;
-      }
-      if(params.navDomId){
-        this.navDomId=params.navDomId;
-      }
-      if(params.sysName){
-        this.sysName=params.sysName;
+      for(var name in params){
+        var pv=params[name];
+        if("menuDomId" == name){
+          this.menuDomId=pv;
+        }else if ("navDomId" == name){
+          this.navDomId=pv;
+        }else if ("sysName" == name){
+          this.sysName=pv;
+        }else if ("maxTopItem" == name){
+          this.maxTopItem=Number.parseInt(pv);
+        }else{
+          this.params[name]=pv;
+        }
       }
     }
     this.currentDomainId="";
@@ -284,9 +291,6 @@ $(function () {
     }else{//单一domain
       this.domainMenus=[domainMenus];
     }
-
-    this.params=params;
-    this.maxTopItem=8;
 
     this.getIconClass=function(name){
       if(name.indexOf("设置") > -1){
@@ -751,15 +755,18 @@ $(function () {
               '<span class="caret"></span></a> '+
           '<ul class="dropdown-menu">{list}</ul>' +
       '</li>';
-      var projectTemplate='<li><a href="javascript:void(0)" onclick="urpnav.changeProfile({project.id})">{project.name}</a></li>'
+      var projectTemplate='<li><a href="{project.url}">{project.name}</a></li>'
       var projects=urp.profiles.projects;
       if(projects.length>1){ //display project when multiproject occur
-        var projecthtml= projectSelectTemplate.replace('{first}',projects[0].name);
-        var list=""
+        var project = urp.profiles.project();
+        var projecthtml= projectSelectTemplate.replace('{first}',project.name);
+        var list="";
         for(var i=0;i<projects.length;i++){
-          var projectItem=projectTemplate.replace("{project.id}",projects[i].id);
-          projectItem=projectItem.replace("{project.name}",projects[i].name);
-          list +=projectItem
+          if(projects[i].id != project.id){
+            var projectItem=projectTemplate.replace("{project.url}",projects[i].url);
+            projectItem=projectItem.replace("{project.name}",projects[i].name);
+            list +=projectItem
+          }
         }
         projecthtml = projecthtml.replace('{list}',list);
         jQuery('.navbar-custom-menu > .navbar-nav').prepend(projecthtml)
