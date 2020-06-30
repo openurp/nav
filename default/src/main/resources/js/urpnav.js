@@ -1,241 +1,3 @@
-/**
- * AdminLTE Demo Menu
- */
-$(function () {
-    'use strict'
-
-    $('[data-toggle="control-sidebar"]').controlSidebar()
-    $('[data-toggle="push-menu"]').pushMenu()
-    var $pushMenu = $('[data-toggle="push-menu"]').data('lte.pushmenu')
-    var $controlSidebar = $('[data-toggle="control-sidebar"]').data('lte.controlsidebar')
-    var $layout = $('body').data('lte.layout')
-    $(window).on('load', function() {
-        // Reinitialize variables on load
-        $pushMenu = $('[data-toggle="push-menu"]').data('lte.pushmenu')
-        $controlSidebar = $('[data-toggle="control-sidebar"]').data('lte.controlsidebar')
-        $layout = $('body').data('lte.layout')
-    })
-
-    var mySkins = [
-        'skin-blue',
-        'skin-black',
-        'skin-red',
-        'skin-yellow',
-        'skin-purple',
-        'skin-green',
-        'skin-blue-light',
-        'skin-black-light',
-        'skin-red-light',
-        'skin-yellow-light',
-        'skin-purple-light',
-        'skin-green-light'
-    ]
-
-    function get(name) {
-        if (typeof (Storage) !== 'undefined') {
-            return localStorage.getItem(name)
-        } else {
-            window.alert('Please use a modern browser to properly view this template!')
-        }
-    }
-
-    function store(name, val) {
-        if (typeof (Storage) !== 'undefined') {
-            localStorage.setItem(name, val)
-        } else {
-            window.alert('Please use a modern browser to properly view this template!')
-        }
-    }
-
-    function changeLayout(cls) {
-        $('body').toggleClass(cls)
-        $layout.fixSidebar()
-        if ($('body').hasClass('fixed') && cls == 'fixed') {
-            $pushMenu.expandOnHover()
-            $layout.activate()
-        }
-        $controlSidebar.fix()
-    }
-
-    function changeSkin(cls) {
-        $.each(mySkins, function (i) {
-            $('body').removeClass(mySkins[i])
-        })
-
-        $('body').addClass(cls)
-        store('skin', cls)
-        return false
-    }
-    function setup() {
-        var tmp = get('skin')
-        if (tmp && $.inArray(tmp, mySkins))
-            changeSkin(tmp)
-
-        // Add the change skin listener
-        $('[data-skin]').on('click', function (e) {
-            if ($(this).hasClass('knob'))
-                return
-            e.preventDefault()
-            changeSkin($(this).data('skin'))
-        })
-
-        // Add the layout manager
-        $('[data-layout]').on('click', function () {
-            changeLayout($(this).data('layout'))
-        })
-
-        $('[data-controlsidebar]').on('click', function () {
-            changeLayout($(this).data('controlsidebar'))
-            var slide = !$controlSidebar.options.slide
-
-            $controlSidebar.options.slide = slide
-            if (!slide)
-                $('.control-sidebar').removeClass('control-sidebar-open')
-        })
-
-        //  Reset options
-        if ($('body').hasClass('fixed')) {
-            $('[data-layout="fixed"]').attr('checked', 'checked')
-        }
-    }
-
-    // Create the new tab
-    var $tabPane = $('<div />', {
-        'id': 'control-sidebar-theme-options-tab',
-        'class': 'tab-pane active'
-    })
-
-    // Create the tab button
-    var $tabButton = $('<li />', {'class': 'active'})
-        .html('<a href=\'#control-sidebar-theme-options-tab\' data-toggle=\'tab\'>'
-            + '<i class="fa fa-wrench"></i>'
-            + '</a>')
-
-    // Add the tab button to the right sidebar tabs
-    $('[href="#control-sidebar-home-tab"]')
-        .parent()
-        .before($tabButton)
-
-    // Create the menu
-    var $demoSettings = $('<div />')
-
-    // Layout options
-    $demoSettings.append(
-        '<h4 class="control-sidebar-heading">'
-        + '布局选项'
-        + '</h4>'
-        // Fixed layout
-        + '<div class="form-group">'
-        + '<label class="control-sidebar-subheading">'
-        + '<input type="checkbox"data-layout="fixed" class="pull-right"/> '
-        + '固定头部导航'
-        + '</label>'
-        + '</div>'
-    )
-    var $skinsList = $('<ul />', {'class': 'list-unstyled clearfix'})
-
-    // Dark sidebar skins
-    var $skinBlue =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-blue" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px; background: #367fa9"></span><span class="bg-light-blue" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinBlue)
-    var $skinBlack =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-black" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #222"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinBlack)
-    var $skinPurple =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-purple" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-purple-active"></span><span class="bg-purple" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinPurple)
-    var $skinGreen =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-green" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-green-active"></span><span class="bg-green" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinGreen)
-    var $skinRed =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-red" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-red-active"></span><span class="bg-red" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinRed)
-    var $skinYellow =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-yellow" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-yellow-active"></span><span class="bg-yellow" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinYellow)
-
-
-    // Light sidebar skins
-    var $skinBlueLight =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-blue-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px; background: #367fa9"></span><span class="bg-light-blue" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinBlueLight)
-    var $skinBlackLight =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-black-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinBlackLight)
-    var $skinPurpleLight =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-purple-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-purple-active"></span><span class="bg-purple" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinPurpleLight)
-    var $skinGreenLight =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-green-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-green-active"></span><span class="bg-green" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinGreenLight)
-    var $skinRedLight =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-red-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-red-active"></span><span class="bg-red" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinRedLight)
-    var $skinYellowLight =
-        $('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
-            .append('<a href="javascript:void(0)" data-skin="skin-yellow-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
-                + '<div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-yellow-active"></span><span class="bg-yellow" style="display:block; width: 80%; float: left; height: 7px;"></span></div>'
-                + '<div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>'
-                + '</a>')
-    $skinsList.append($skinYellowLight)
-
-    $demoSettings.append('<h4 class="control-sidebar-heading">皮肤</h4>')
-    $demoSettings.append($skinsList)
-
-    $tabPane.append($demoSettings)
-    $('#control-sidebar-home-tab').after($tabPane)
-
-    setup()
-
-    try{
-    $('[data-toggle="tooltip"]').tooltip()
-    }catch(e){}
-})
-
 // urp nav
   function messageCallBack(c){
     jQuery('#newly-message-count').text(c)
@@ -247,18 +9,20 @@ $(function () {
     };
   }
 
-$(function () {
-    'use strict'
-
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('urp')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'urp'], factory) :
+  (global = global || self, factory(global.urpnav = {}, global.urp));
+}(this, (function (exports, urp) { 'use strict';
  /**
   * @domainMenus
-  *    {domain:{},children:[],appMenus:[{app:{},menus:[]},{app:{},menus:[]}]}
+  *    {domain:{},groups:[{group:{},appMenus:[{app:{},menus:[]},{app:{},menus:[]}] }] }
   */
   function Nav(app,portal,domainMenus,params){
     this.portal=portal;
     this.app=app;
     this.apps=[];
-    this.domains=[];
+    this.groups=[];
     this.appMenus={};
     this.menuDomId="menu_ul";
     this.navDomId="top_nav_bar";
@@ -281,20 +45,15 @@ $(function () {
         }
       }
     }
-    this.currentDomainId="";
-    //多个domain,参数是一个顶级domain,children是多个domain,且没有菜单
-    if(domainMenus.appMenus==null || domainMenus.appMenus.length==0){
-      this.domainMenus=domainMenus.children;
-      for(var i=0;i < this.domainMenus.length; i++){
-        this.domains.push(this.domainMenus[i].domain);
-      }
-    }else{//单一domain
-      this.domainMenus=[domainMenus];
+    this.currentGroupId="";
+    this.groupMenus=domainMenus.groups;
+    for(var i=0;i < this.groupMenus.length; i++){
+      this.groups.push(this.groupMenus[i].group);
     }
 
     this.getIconClass=function(name){
       if(name.indexOf("设置") > -1){
-        return "fa fa-gears";
+        return "fas fa-cog";
       }else if(name.endsWith("开关")){
        return "fa fa-toggle-on";
       }else if(name.endsWith("信息")){
@@ -304,23 +63,23 @@ $(function () {
       }else if(name.indexOf("打印") > -1){
         return "fa fa-print";
       }else if(name.indexOf("统计") > -1){
-        return "fa fa-bar-chart";
+        return "fa fa-chart-bar";
       }else if(name.indexOf("安排") > -1){
         return "fa fa-calendar";
       }else if(name.indexOf("排名") > -1){
-        return "fa fa-sort-amount-desc";
+        return "fa fa-sort-amount-down";
       }else if(name.endsWith("表")){
         return "fa fa-table";
       }else{
-        return "fa fa-circle-o";
+        return "far fa-circle";
       }
     }
-    this.menuTempalte='<li><a onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="{icon_class}"></i>{menu.title}</a></li>';
+    this.menuTempalte='<li class="nav-item"><a class="nav-link" onclick="return bg.Go(this,\'main\')" href="{menu.entry}" target="main" ><i class="nav-icon {icon_class}"></i><p>{menu.title}</p></a></li>';
     if(document.getElementById('main').tagName!='DIV'){
-      this.menuTempalte='<li><a target="main" href="{menu.entry}"><i class="fa fa-circle-o"></i>{menu.title}</a></li>';
+      this.menuTempalte='<li class="nav-item"><a class="nav-link" target="main" href="{menu.entry}"><i class="nav-icon fa fa-circle-o"></i><p>{menu.title}</p></a></li>';
     }
-    this.foldTemplate='<li style="margin:0px;" class="{active_class} treeview"><a href="javascript:void(0)"><i class="fa fa-list"></i><span>{menu.title}</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu" id="menu{menu.id}"></ul></li>'
-    this.appFoldTemplate='<li style="margin:0px;" class="{active_class} treeview"><a href="javascript:void(0)"><i class="fa fa-list"></i><span>{app.title}</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu" id="menu_app{app.id}"></ul></li>'
+    this.foldTemplate='<li style="margin:0px;" class="nav-item has-treeview {active_class}"><a class="nav-link" href="javascript:void(0)"><i class="nav-icon fa fa-list"></i><p>{menu.title}<i class="nav-icon fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview" id="menu{menu.id}"></ul></li>'
+    this.appFoldTemplate='<li style="margin:0px;" class="nav-item has_treeview {active_class}"><a class="nav-link" href="javascript:void(0)"><i class="nav-icon fa fa-list"></i><p>{app.title}<i class="nav-icon fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview" id="menu_app{app.id}"></ul></li>'
     if(!this.app.navStyle){
      this.app.navStyle="unkown";
     }
@@ -328,7 +87,7 @@ $(function () {
     if(!this.sysName){
       this.sysName=this.app.title;
     }
-    jQuery("#"+this.menuDomId).addClass("sidebar-menu").tree();
+    jQuery("#"+this.menuDomId).addClass("sidebar-menu");
   }
 
   Nav.prototype={
@@ -339,17 +98,17 @@ $(function () {
       }
       return url;
     },
-      /**
-       * 收集domain中的apps，以及每个app对应的菜单
-       */
+    /**
+     * 收集domain中的apps，以及每个app对应的菜单
+     */
     collectApps : function(){
-      for(var p=0;p < this.domainMenus.length;p++){
-        var childrenApps=this.domainMenus[p].appMenus; // a domain contain many app
-        var domain=this.domainMenus[p].domain;
+      for(var p=0;p < this.groupMenus.length;p++){
+        var childrenApps=this.groupMenus[p].appMenus; // a group contain many app
+        var group=this.groupMenus[p].group;
         for(var i=0;i<childrenApps.length;i++){
           var app = childrenApps[i].app;
-          if(!app.domain){
-            app.domain=domain;
+          if(!app.group){
+            app.group=group;
           }
           this.appMenus[app.name]=childrenApps[i].menus;
           if(app.name==this.portal.name){
@@ -357,7 +116,7 @@ $(function () {
             this.portal.url=app.url;
           } else if(app.name==this.app.name){
             app.base=this.app.base;
-            this.app.domain=domain;
+            this.app.group=group;
             this.app.title=app.title;
             this.app.id=app.id;
             this.apps.push(app);
@@ -412,67 +171,136 @@ $(function () {
       var that=this;
       jQuery("#"+this.menuDomId+" li a").click(function() {
         if(this.href=="javascript:void(0)"){
-          jQuery(this).parent('li').siblings().removeClass('active');
-          jQuery(this).parent('li').addClass('active');
+          jQuery(this).parent('li').siblings().each(function (i,li){
+              jQuery(li).removeClass('menu-open');
+              jQuery(li).children('ul').hide();
+              jQuery(li).children('a').removeClass('active');
+            }
+          );
           // why 11 so strange.
-           if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
-             $('#main').height((document.getElementById(that.menuDomId).scrollHeight+11));
-           }
+          if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
+            $('#main').css("min-height",(document.getElementById(that.menuDomId).scrollHeight+11));
+          }
         }else{
-          jQuery(this).parent('li').siblings().removeClass('active');
-          jQuery(this).parent('li').addClass('active');
+          jQuery(this).parent('li').siblings().each(function (i,li){jQuery(li).children('a').removeClass('active')});
         }
+        jQuery(this).addClass('active');
       });
       if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
-        $('#main').height((document.getElementById(that.menuDomId).scrollHeight+11));
+        $('#main').css("min-height",(document.getElementById(that.menuDomId).scrollHeight+11));
       }
     }
   }
 
-  function PortalNav(nav){
+
+  function switchNavActive(anchorId){
+    if(jQuery(anchorId).parent()[0].tagName=="LI"){
+      jQuery(anchorId).parent().siblings().each(function(i,li){jQuery(li).children("a").removeClass("active")});
+      jQuery(anchorId).addClass("active");
+    }else{
+      jQuery(anchorId).siblings().each(function(i,a){jQuery(a).removeClass("active")});
+      jQuery(anchorId).addClass("active");
+    }
+  }
+
+  /**
+   * 添加app导航,是app内部菜单之外的所有app的展示pannel
+   */
+  function prependApps(jqueryElem,nav,apps,autohide){
+    var appDropNav='<ul class="nav navbar-nav"><li class="nav-item dropdown">' +
+                   '<a href="#" data-toggle="dropdown" class="nav-link {autohide}" role="button" title="应用" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"><i class="fas fa-th"></i></a>' +
+                   '<div id="app_drop_bar" class="dropdown-menu columns-3"></div>'+
+                   '</li></ul>';
+    var appTemplate='<a href="{app.url}" class="dropdown-item {active_class}" target="_top">{app.title}</a>';
+    jqueryElem.before(appDropNav.replace("{autohide}",autohide?"app-toggle":""));
+    var appDropBarID="#app_drop_bar";
+    jqueryElem = jQuery(appDropBarID);
+    var curGroupId=0;
+    var columRows=Math.ceil(nav.apps.length/3);
+    var content='<div class="row">';
+    var columnApps=[[],[],[]]
+    if(!apps){
+      apps= nav.apps;
+    }
+    for(var i=0;i<apps.length;i++){
+      columnApps[Math.floor(i / columRows)].push(apps[i]);
+    }
+    for(var column=0;column<columnApps.length;column++){
+      var columnApp= columnApps[column];
+      var columnDiv='<div class="col-sm-4">'
+      for(var i=0;i<columnApp.length;i++){
+        var app=columnApp[i];
+        if(app.group){
+          if(curGroupId ==0){
+            curGroupId=app.group.id;
+          }else{
+            if(app.group.id != curGroupId){
+              if(i>0){
+                columnDiv+='<div class="dropdown-divider"></div>';
+              }
+              curGroupId=app.group.id;
+            }
+          }
+        }
+        if(app.name==nav.app.name){//添加左侧的标题
+          columnDiv += '<a  class="dropdown-item active" href="#">'+app.title+'</a>';
+        }else{
+          var appendHtml = appTemplate.replace('{app.url}',nav.processUrl(app.url));
+          appendHtml = appendHtml.replace('{app.title}',app.title);
+          appendHtml = appendHtml.replace('{active_class}',"");
+          columnDiv+=appendHtml;
+        }
+      }
+      columnDiv+="</div>";
+      content += columnDiv;
+    }
+    content+="</div>";
+    jqueryElem.append(content);
+  }
+
+  function DomainNav(nav){
     this.nav=nav;
-    this.domainTemplate='<li class="{active_class}"><a href="javascript:void(0)" id="domain_{domain.id}" onclick="urpnav.changeDomain(this)">{domain.title}</a></li>';
-    this.portalTemplate='<li><a href="{app.url}" onclick="return bg.Go(this,\'main\')">{app.title}</a></li>';
+    this.groupTemplate='<li class="nav-item {active_class}"><a class="nav-link" href="javascript:void(0)" id="group_{group.id}">{group.title}</a></li>';
+    this.portalTemplate='<li class="nav-item"><a href="{app.url}" class="nav-link" target="_self">{app.title}</a></li>';
 
     /**
-     * 向顶层添加domain
+     * 向顶层添加groups
      */
-    this.addTopDomains = function(jqueryElem){
+    this.addTopGroups = function(jqueryElem){
       var appItem='';
-      jQuery('#appName').html(jQuery('#appName').siblings(0).html()+this.nav.sysName);
-      jQuery('.logo').each(function (i,e){e.href=document.location})
-
-      var domainToggle='<a href="javascript:urpnav.toggleTopBar()" class="app-toggle" role="button"><span class="sr-only"></span></a>';
-      jqueryElem.before(domainToggle);
+      jQuery('#appName').html(this.nav.sysName);
+      prependApps(jqueryElem,this.nav,this.nav.apps,true)
 
       var app=this.nav.app;
       appItem = this.portalTemplate.replace('{app.url}',this.nav.processUrl(app.url));
       appItem = appItem.replace('{app.title}',this.nav.portal.title);
       jqueryElem.append(appItem);
 
-      for(var i=0;i < this.nav.domains.length; i++){
-        var domain= this.nav.domains[i];
-        appItem = this.domainTemplate.replace('{domain.title}',domain.title);
-        appItem = appItem.replace('{domain.id}',domain.id);
-        appItem = appItem.replace('{domain.name}',domain.name);
+      for(var i=0;i < this.nav.groups.length; i++){
+        var group = this.nav.groups[i];
+        appItem = this.groupTemplate.replace('{group.title}',group.title);
+        appItem = appItem.replace('{group.id}',group.id);
+        appItem = appItem.replace('{group.name}',group.name);
         appItem = appItem.replace('{active_class}',(i==0)?"active":"");
         jqueryElem.append(appItem);
+        jQuery("#group_"+group.id).click(function(){changeGroup(this);return false});
       }
     }
     this.displayCurrent=function(){
-      this.displayDomainMenus(this.nav.currentDomainId);
+      this.displayGroupMenus(this.nav.currentGroupId);
     }
     /**
-     * 显示指定domain的menu
+     * 显示指定group的menu
      */
-    this.displayDomainMenus = function (domainId){
-      for(var i=0;i < this.nav.domainMenus.length; i++){
-        var domainMenu=this.nav.domainMenus[i];
-        if(domainMenu.domain.id==domainId){
-          document.title=domainMenu.domain.title;
-          this.nav.createMenus(jQuery('#'+this.nav.menuDomId),null,domainMenu.appMenus);
+    this.displayGroupMenus = function (groupId){
+      switchNavActive("#group_"+groupId);
+      for(var i=0;i < this.nav.groupMenus.length; i++){
+        var groupMenu=this.nav.groupMenus[i];
+        if(groupMenu.group.id==groupId){
+          document.title=groupMenu.group.title;
+          this.nav.createMenus(jQuery('#'+this.nav.menuDomId),null,groupMenu.appMenus);
           this.nav.activate();
-          this.nav.currentDomainId=domainId;
+          this.nav.currentGroupId=groupId;
           break;
         }
       }
@@ -480,12 +308,15 @@ $(function () {
   }
 
   /**
-   * 显示一个domain中的各个app的餐单
+   * 显示一个group中的各个app的餐单
    */
-  function DomainNav(nav){
+  function GroupNav(nav){
     this.nav=nav;
-    this.appExternTemplate   ='<li class="{active_class}"><a href="{app.url}" target="_top">{app.title}</a></li>';
-    this.appNavTemplate='<li class="{active_class}"><a href="{app.url}" id="app_{app.id}" onclick="urpnav.changeApp(this);return false;">{app.title}</a></li>';
+    this.appExternTemplate   ='<li class="nav-item"><a href="{app.url}"  class="nav-link {active_class}" target="_top">{app.title}</a></li>';
+    this.appNavTemplate='<li class="nav-item"><a href="{app.url}"  class="nav-link {active_class}" id="app_{app.id}" >{app.title}</a></li>';
+    //add app in dropdown
+    this.dropdownAppExternTemplate   ='<a href="{app.url}"  class="dropdown-item {active_class}" target="_top">{app.title}</a>';
+    this.dropdownAppNavTemplate='<a href="{app.url}"  class="dropdown-item {active_class}" id="app_{app.id}" >{app.title}</a>';
     /**
      * 向顶层添加app
      */
@@ -494,46 +325,54 @@ $(function () {
       var appItem='';
       var topMenuMoreHappened=false;
       var thisApp=this.nav.app;
-      var domainApps=[this.nav.portal];
-      //过滤掉非所在domain的app
+      var groupApps=[this.nav.portal];
+      //过滤掉非所在group的app
       for(var i=0;i<this.nav.apps.length;i++){
         var app =this.nav.apps[i];
         if(app.name==this.nav.portal.name){
           continue;
         }
-        if(app.domain && thisApp.domain && app.domain.id != thisApp.domain.id){
+        if(app.group && thisApp.group && app.group.id != thisApp.group.id){
           continue;
         }
-        domainApps.push(app);
+        groupApps.push(app);
       }
-      var appToggle='<a href="javascript:urpnav.toggleTopBar()" class="app-toggle" role="button"><span class="sr-only"></span></a>';
-      jqueryElem.before(appToggle);
-      for(var i=0;i<domainApps.length;i++){
-        var app =domainApps[i];
+      prependApps(jqueryElem,this.nav,groupApps,true)
+      for(var i=0;i<groupApps.length;i++){
+        var app = groupApps[i];
         if(app.name==this.nav.app.name){
-          var domainTitle=app.title;
-          if(app.domain && app.domain.title) domainTitle=app.domain.title
-          jQuery('#appName').html(jQuery('#appName').siblings(0).html()+domainTitle);
-          jQuery('.main-header .logo').each(function (i,e){e.href=document.location})
+          var appName=app.title;
+          if(app.group && app.group.title) appName=app.group.title
+          jQuery('#appName').html(appName);
         }
-        if(topItemCount == this.nav.maxTopItem && domainApps.length > this.nav.maxTopItem){
-          jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
+        if(topItemCount == this.nav.maxTopItem && groupApps.length > this.nav.maxTopItem){
+          jqueryElem.append('<li class="nav-item dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle nav-link">更多...</a><div id="topMenuMore" aria-labelledby="navbarDropdown" class="dropdown-menu"></div><li>');
           topMenuMoreHappened=true;
         }
         if(topMenuMoreHappened){
           jqueryElem = jQuery('#topMenuMore');
         }
         if(app.embeddable){
-          appItem = this.appNavTemplate.replace('{app.id}',app.id);
+          if(topMenuMoreHappened){
+            appItem = this.dropdownAppNavTemplate.replace('{app.id}',app.id);
+          }else{
+            appItem = this.appNavTemplate.replace('{app.id}',app.id);
+          }
           appItem = appItem.replace('{app.title}',app.title);
           appItem = appItem.replace('{app.url}',this.nav.processUrl(app.url));
           appItem = appItem.replace('{active_class}',app.name==this.nav.app.name?"active":"");
+          jqueryElem.append(appItem);
+          jQuery("#app_"+app.id).click(function (){changeApp(this);return false;})
         }else{
-          appItem = this.appExternTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+          if(topMenuMoreHappened){
+            appItem = this.dropdownAppExternTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+          }else{
+            appItem = this.appExternTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+          }
           appItem = appItem.replace('{app.title}',app.title);
           appItem = appItem.replace('{active_class}',app.name==this.nav.app.name?"active":"");
+          jqueryElem.append(appItem);
         }
-        jqueryElem.append(appItem);
         topItemCount +=1;
       }
     }
@@ -554,6 +393,7 @@ $(function () {
         }
       }
       if(targetApp){
+        switchNavActive("#app_"+appId);
         var appMenu=this.nav.appMenus[targetApp.name];
         if(appMenu){
           if(appMenu.length>0){
@@ -576,68 +416,22 @@ $(function () {
       this.displayAppMenus(this.nav.app.id);
     }
   }
-
-
   /**
    * 导航栏和菜单栏都是app中的内容
    */
   function AppNav(nav){
     this.nav=nav;
-    this.topMenuTemplate='<li class="{active_class}"  id="topMenu{menu.idx}"><a href="javascript:void(0)" onclick="urpnav.changeMenu({menu.idx})">{menu.title}</a></li>';
-    this.appTemplate='<li class="{active_class}"><a href="{app.url}" target="_top">{app.title}</a></li>';
-    /**
-     * 添加app导航和logo标题
-     */
-    this.addApps = function(jqueryElem){
-      var appDropNav='<ul class="nav navbar-nav"><li class="dropdown">' +
-                     '<a href="#" data-toggle="dropdown" style="padding: 15px 15px;" class="app-toggle" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="true"></a>' +
-                     '<ul id="app_drop_bar" class="dropdown-menu dropdown-menu multi-column columns-3"></ul>'+
-                     '</li></ul>';
-      jqueryElem.before(appDropNav);
-      var appDropBarID="#app_drop_bar";
-      jqueryElem = jQuery(appDropBarID);
-      var curDomainId=0;
-      var columRows=Math.ceil(this.nav.apps.length/3);
-      var content='<div class="row">';
-      var columnApps=[[],[],[]]
-      for(var i=0;i<this.nav.apps.length;i++){
-        columnApps[Math.floor(i / columRows)].push(this.nav.apps[i]);
-      }
-      for(var column=0;column<columnApps.length;column++){
-        var columnApp= columnApps[column];
-        var columnDiv='<div class="col-sm-4"><ul class="multi-column-dropdown">'
-        for(var i=0;i<columnApp.length;i++){
-          var app=columnApp[i];
-          if(curDomainId ==0){
-            curDomainId=app.domain.id;
-          }else{
-            if(app.domain.id != curDomainId){
-              if(i>0){
-                columnDiv+='<li role="separator" class="divider"></li>';
-              }
-              curDomainId=app.domain.id;
-            }
-          }
-          if(app.name==this.nav.app.name){//添加左侧的logo和标题
-            jQuery('#appName').html(jQuery('#appName').siblings(0).html()+app.title);
-            jQuery('.main-header .logo').each(function (i,e){e.href=document.location})
-            columnDiv += '<li class="active"><a style="color:blue" href="#">'+app.title+'</a></li>';
-          }else{
-            var appendHtml = this.appTemplate.replace('{app.url}',this.nav.processUrl(app.url));
-            appendHtml = appendHtml.replace('{app.title}',app.title);
-            appendHtml = appendHtml.replace('{active_class}',"");
-            columnDiv+=appendHtml;
-          }
-        }
-        columnDiv+="</ul></div>";
-        content += columnDiv;
-      }
-      content+="</div>";
-      jqueryElem.append(content);
-    }
+    this.topMenuTemplate='<li class="nav-item"><a  id="topMenu_{menu.idx}" href="javascript:void(0)"  class="nav-link {active_class}">{menu.title}</a></li>';
+    this.dropdownTopMenuTemplate='<a id="topMenu_{menu.idx}" href="javascript:void(0)"  class="dropdown-item {active_class}">{menu.title}</a>';
 
     this.addTopMenus=function(jqueryElem){
+      prependApps(jqueryElem,this.nav,this.nav.apps,false)
       jqueryElem.empty();
+      for(var i=0;i<nav.apps.length;i++){
+        if(nav.apps[i].name == nav.app.name){
+          jQuery('#appName').html(nav.apps[i].title);
+        }
+      }
       var topMenuCount=0;
       var appendHtml='';
       var menus=this.nav.appMenus[this.nav.app.name];
@@ -648,22 +442,24 @@ $(function () {
         }
         topMenuCount +=1;
         if(topMenuCount == this.nav.maxTopItem){
-          jqueryElem.append('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">更多...<b class="caret"></b></a><ul id="topMenuMore" class="dropdown-menu"></ul><li>');
+          jqueryElem.append('<li class="nav-item dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle nav-link">更多...</a><div id="topMenuMore" class="dropdown-menu"></div><li>');
         }
         if(topMenuCount >= this.nav.maxTopItem ){
           jqueryElem = jQuery('#topMenuMore');
+          appendHtml = this.dropdownTopMenuTemplate.replace('{menu.title}',menu.title);
+        }else{
+          appendHtml = this.topMenuTemplate.replace('{menu.title}',menu.title);
         }
-        appendHtml = this.topMenuTemplate.replace('{menu.title}',menu.title);
         appendHtml = appendHtml.replace('{menu.idx}',i);
         appendHtml = appendHtml.replace('{menu.idx}',i);
         appendHtml = appendHtml.replace('{active_class}',(i==0)?"active":"");
         jqueryElem.append(appendHtml);
+        jQuery("#topMenu_"+i).click(function(){changeMenu(this);return false;});
       }
     }
 
     this.displayTopMenus=function(idx){
-      jQuery("#topMenu"+idx).siblings().removeClass("active");
-      jQuery("#topMenu"+idx).addClass("active");
+      switchNavActive("#topMenu_"+idx);
       var menus=this.nav.appMenus[this.nav.app.name]
       var children = menus[idx].children;
       if(children){
@@ -676,143 +472,136 @@ $(function () {
       this.nav.createMenus(jQuery('#'+this.nav.menuDomId),this.nav.app,menus);
       this.nav.activate();
     }
-
   }
 
-  var urpnav = {
-    navMenu:{},
+  var navMenu ={};
 
-    createPortalNav:function(app,portal,domainMenus,params,config){
-      var nav= new Nav(app,portal,domainMenus,params,config);
-      var portal= new PortalNav(nav);
-      portal.addTopDomains(jQuery('#'+nav.navDomId));
-      portal.displayDomainMenus(nav.domains[0].id);
-      this.navMenu=portal;
-    },
+  function createDomainNav (app,portal,domainMenus,params,config){
+    var nav= new Nav(app,portal,domainMenus,params,config);
+    navMenu = new DomainNav(nav);
+    navMenu.addTopGroups(jQuery('#'+nav.navDomId));
+    navMenu.displayGroupMenus(nav.groups[0].id);
+  }
 
-    createDomainNav:function(app,portal,domainMenus,params,config){
-      var nav= new Nav(app,portal,domainMenus,params,config);
-      var domain= new DomainNav(nav);
-      domain.addTopApps(jQuery('#'+nav.navDomId));
-      domain.displayAppMenus(nav.app.id);
-      this.navMenu=domain;
-    },
+  function createGroupNav(app,portal,domainMenus,params,config){
+    var nav= new Nav(app,portal,domainMenus,params,config);
+    var group = new GroupNav(nav);
+    group.addTopApps(jQuery('#'+nav.navDomId));
+    group.displayAppMenus(nav.app.id);
+    navMenu=group;
+  }
 
-    createAppNav:function(app,portal,domainMenus,params,config){
-      var nav= new Nav(app,portal,domainMenus,params,config);
-      var appNav= new AppNav(nav);
-      appNav.addApps(jQuery('#'+nav.navDomId));
-      appNav.addTopMenus(jQuery('#'+nav.navDomId));
-      appNav.displayTopMenus(0);
-      this.navMenu=appNav;
-    },
+  function createAppNav(app,portal,domainMenus,params,config){
+    var nav= new Nav(app,portal,domainMenus,params,config);
+    var appNav= new AppNav(nav);
+    appNav.addTopMenus(jQuery('#'+nav.navDomId));
+    appNav.displayTopMenus(0);
+    navMenu=appNav;
+  }
 
-    /**
-     * 切换app的全局函数
+  /**
+   * 切换app的全局函数
+   * @param id
+   * @param name
+   * @returns
+   */
+  function changeApp(ele){
+    var id=ele.id
+    navMenu.displayAppMenus(id.substring("app_".length));
+  }
+
+  /**
+   * 切换group的全局函数
+   * @param id
+   * @param name
+   * @returns
+   */
+  function changeGroup(ele){
+    var id=ele.id
+    navMenu.displayGroupMenus(id.substring("group_".length));
+  }
+   /**
+     * 全局函数可以切换项目，渲染菜单
      * @param id
-     * @param name
      * @returns
      */
-    changeApp:function(ele){
-      var id=ele.id
-      jQuery("#"+id).parent().addClass("active");
-      jQuery("#"+id).parent().siblings().removeClass("active");
-      this.navMenu.displayAppMenus(id.substring("app_".length));
-    },
-
-    /**
-     * 切换domain的全局函数
-     * @param id
-     * @param name
-     * @returns
-     */
-    changeDomain:function(ele){
-      var id=ele.id
-      jQuery("#"+id).parent().addClass("active");
-      jQuery("#"+id).parent().siblings().removeClass("active");
-      this.navMenu.displayDomainMenus(id.substring("domain_".length));
-    },
-    /**
-       * 全局函数可以切换项目，渲染菜单
-       * @param id
-       * @returns
-       */
-    changeProfile:function(id){
-      var p = urp.profiles.changeProject(id);
-      this.navMenu.nav.params['project']=p.id;
-      this.navMenu.nav.params['school']=p.schoolId;
-      this.navMenu.displayCurrent();
-    },
-
-    changeMenu:function(idx){
-      this.navMenu.displayTopMenus(idx);
-    },
-
-    createProjectNav:function(){
-      var projectSelectTemplate=
-       '<li class="dropdown">' +
-          '<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="project_switcher" aria-expanded="false">{first}' +
-              '<span class="caret"></span></a> '+
-          '<ul class="dropdown-menu">{list}</ul>' +
-      '</li>';
-      var projectTemplate='<li><a href="{project.url}">{project.name}</a></li>'
-      var projects=urp.profiles.projects;
-      if(projects.length>1){ //display project when multiproject occur
-        var project = urp.profiles.project();
-        var projecthtml= projectSelectTemplate.replace('{first}',project.name);
-        var list="";
-        for(var i=0;i<projects.length;i++){
-          if(projects[i].id != project.id){
-            var projectItem=projectTemplate.replace("{project.url}",projects[i].url);
-            projectItem=projectItem.replace("{project.name}",projects[i].name);
-            list +=projectItem
-          }
-        }
-        projecthtml = projecthtml.replace('{list}',list);
-        jQuery('.navbar-custom-menu > .navbar-nav').prepend(projecthtml)
-      }
-    },
-
-    fetchMessages:function(params){
-      if(!urp.sameDomain(window.location.href,params['openurp.webapp'])){
-        return;
-      }
-      jQuery.ajax({
-        url: params['openurp.webapp']+'/platform/user/message/newly?callback=messageCallBack',cache:false,
-        type: "GET",dataType: "html",
-        complete: function( jqXHR) {
-            try{
-              jQuery("#newly-message").html(jqXHR.responseText);
-            }catch(e){alert(e)}
-        }
-      });
-    },
-
-    setup:function (params) {
-      jQuery("body").addClass("hold-transition sidebar-mini skin-blue");
-      this.fetchMessages(params);
-    },
-
-    toggleTopBar:function(){
-      var bar=jQuery("#"+this.navMenu.nav.navDomId)
-      if(bar.is(":hidden")){
-        bar.css("margin","50px 0px 0px 0px")
-        bar.show();
-      }else{
-        bar.css("margin","00px 0px 0px 0px")
-        bar.hide();
-      }
-    }
-
+  function changeProfile(id){
+    var p = urp.config.profiles.changeProfile(id);
+    navMenu.nav.params['profile']=p.id;
+    navMenu.nav.params['school']=p.schoolId;
+    navMenu.displayCurrent();
   }
 
-  //register as a module
-  if ( typeof module === "object" && module && typeof module.exports === "object" ) {
-    module.exports = urpnav;
-  } else {
-    window.urpnav=urpnav;
-    if ( typeof define === "function" && define.amd ) {
-      define( "urpnav", [], function () { return urpnav; } );
+  function changeMenu(ele){
+    var id=ele.id
+    navMenu.displayTopMenus(id.substring("topMenu_".length));
+  }
+
+  function createProfileNav(){
+    var profileSelectTemplate=
+     '<li class="nav-item dropdown">' +
+        '<a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#" id="profile_switcher" aria-expanded="false">{first}</a> '+
+        '<div class="dropdown-menu">{list}</div>' +
+    '</li>';
+    var profileTemplate='<a href="{profile.url}" class="dropdown-item">{profile.name}</a>'
+    var profiles=urp.config.profiles;
+    if(profiles.length > 1){ //display profile when multi profile occur
+      var profile = urp.config.profile;
+      var profilehtml= profileSelectTemplate.replace('{first}',profile.name);
+      var list="";
+      for(var i=0;i<profiles.length;i++){
+        if(profiles[i].id != profile.id){
+          var profileItem=profileTemplate.replace("{profile.url}",profiles[i].url);
+          profileItem=profileItem.replace("{profile.name}",profiles[i].name);
+          list +=profileItem
+        }
+      }
+      profilehtml = profilehtml.replace('{list}',list);
+      jQuery('.main-header > .ml-auto').prepend(profilehtml)
     }
   }
-});
+
+  function fetchMessages(params){
+    if(!urp.sameDomain(window.location.href,params['openurp.webapp'])){
+      return;
+    }
+    jQuery.ajax({
+      url: params['openurp.webapp']+'/platform/user/message/newly?callback=messageCallBack',cache:false,
+      type: "GET",dataType: "html",
+      complete: function( jqXHR) {
+          try{
+            jQuery("#newly-message").html(jqXHR.responseText);
+          }catch(e){alert(e)}
+      }
+    });
+  }
+
+  function setup (params) {
+    jQuery("body").addClass("sidebar-mini layout-fixed text-sm");
+    fetchMessages(params);
+  }
+
+  function toggleTopBar(){
+    var bar=jQuery("#"+this.navMenu.nav.navDomId)
+    if(bar.is(":hidden")){
+      bar.css("margin","50px 0px 0px 0px")
+      bar.show();
+    }else{
+      bar.css("margin","00px 0px 0px 0px")
+      bar.hide();
+    }
+  }
+
+  exports.createDomainNav=createDomainNav;
+  exports.createGroupNav=createGroupNav;
+  exports.createAppNav=createAppNav;
+  //exports.changeApp=changeApp;
+  //exports.changeMenu=changeMenu;
+  exports.changeGroup=changeGroup;
+  exports.changeProfile=changeProfile;
+  exports.createProfileNav=createProfileNav;
+  exports.fetchMessages=fetchMessages;
+  exports.setup=setup;
+  exports.toggleTopBar=toggleTopBar;
+})));
+

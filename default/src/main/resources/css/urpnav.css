@@ -1,74 +1,31 @@
 
- .logo_img{
-   float: left;
-   width: 50px;
-   height: 50px;
-  }
- .app-toggle {
-    float: left;
-    background-color: transparent;
-    background-image: none;
-    padding: 15px 15px;
-    font-family: fontAwesome;
-    color: #fff;
- }
- .app-toggle:before {
-    content: "\f00a";
- }
- .app-toggle:hover {
-    background-color: #367fa9;
-    color: #f6f6f6;
-     background: rgba(0, 0, 0, 0.1);
- }
- .app-toggle:focus,.app-toggle:active {
-    background: transparent;
- }
- .app-toggle {
-    display: none;
-    color: #fff;
- }
  @media (max-width: 767px) {
     #top_nav_bar {
       display: none;
     }
-    .app-toggle {
-      display:block;
-    }
  }
 
-  .dropdown-menu {
-    min-width: 200px;
+.dropdown-menu.columns-2 {
+  min-width: 260px;
+}
+
+.app-toggle {
+  display:none;
+}
+
+.dropdown-menu.columns-3 {
+  min-width: 390px;
+}
+
+@media (max-width: 767px) {
+  .dropdown-menu.column-3 {
+    min-width: 240px !important;
+    overflow-x: hidden;
   }
-  .dropdown-menu.columns-2 {
-    min-width: 300px;
+  .app-toggle {
+    display:block;
   }
   .dropdown-menu.columns-3 {
-    min-width: 450px;
+    min-width: 180px;
   }
-  .dropdown-menu li a {
-    padding: 5px 15px;
-    font-weight: 300;
-  }
-  .multi-column-dropdown {
-    list-style: none;
-    padding:0px;
-  }
-  .multi-column-dropdown li a {
-    display: block;
-    clear: both;
-    line-height: 1.428571429;
-    color: #333;
-    white-space: normal;
-  }
-  .multi-column-dropdown li a:hover {
-    text-decoration: none;
-    color: #262626;
-    background-color: #f5f5f5;
-  }
-
-  @media (max-width: 767px) {
-    .dropdown-menu.multi-column {
-      min-width: 240px !important;
-      overflow-x: hidden;
-    }
-  }
+}
