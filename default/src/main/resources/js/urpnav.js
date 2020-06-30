@@ -78,8 +78,8 @@
     if(document.getElementById('main').tagName!='DIV'){
       this.menuTempalte='<li class="nav-item"><a class="nav-link" target="main" href="{menu.entry}"><i class="nav-icon fa fa-circle-o"></i><p>{menu.title}</p></a></li>';
     }
-    this.foldTemplate='<li style="margin:0px;" class="nav-item has-treeview {active_class}"><a class="nav-link" href="javascript:void(0)"><i class="nav-icon fa fa-list"></i><p>{menu.title}<i class="nav-icon fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview" id="menu{menu.id}"></ul></li>'
-    this.appFoldTemplate='<li style="margin:0px;" class="nav-item has_treeview {active_class}"><a class="nav-link" href="javascript:void(0)"><i class="nav-icon fa fa-list"></i><p>{app.title}<i class="nav-icon fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview" id="menu_app{app.id}"></ul></li>'
+    this.foldTemplate='<li class="nav-item has-treeview {open_class}"><a class="nav-link {active_class}" href="javascript:void(0)"><i class="nav-icon fa fa-list"></i><p>{menu.title}<i class="nav-icon fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview" id="menu{menu.id}"></ul></li>'
+    this.appFoldTemplate='<li class="nav-item has_treeview {open_class}"><a class="nav-link {active_class}" href="javascript:void(0)"><i class="nav-icon fa fa-list"></i><p>{app.title}<i class="nav-icon fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview" id="menu_app{app.id}"></ul></li>'
     if(!this.app.navStyle){
      this.app.navStyle="unkown";
     }
@@ -149,13 +149,15 @@
         if(menu.menus){//app
           var appItem = this.appFoldTemplate.replace('{app.id}',menu.app.id);
           appItem = appItem.replace('{app.title}',menu.app.title);
-          appItem = appItem.replace('{active_class}',(i==0)?"active menu-open":"");
+          appItem = appItem.replace('{open_class}',(i==0)?"menu-open":"");
+          appItem = appItem.replace('{active_class}',(i==0)?"active":"");
           jqueryElem.append(appItem);
           this.createMenus(jQuery('#menu_app'+menu.app.id),menu.app,menu.menus);
         }else if(menu.children){//fold
           menuItem = this.foldTemplate.replace('{menu.id}',menu.id);
           menuItem = menuItem.replace('{menu.title}',menu.title);
-          menuItem = menuItem.replace('{active_class}',(i==0)?"active menu-open":"");
+          menuItem = menuItem.replace('{open_class}',(i==0)?"menu-open":"");
+          menuItem = menuItem.replace('{active_class}',(i==0)?"active":"");
           jqueryElem.append(menuItem);
           this.createMenus(jQuery('#menu'+menu.id),app,menu.children);
         }else{//menu
@@ -177,18 +179,17 @@
               jQuery(li).children('a').removeClass('active');
             }
           );
-          // why 11 so strange.
-          if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
-            $('#main').css("min-height",(document.getElementById(that.menuDomId).scrollHeight+11));
+          var jThis=jQuery(this);
+          if(jThis.hasClass("active")){
+            jThis.removeClass("active");
+          }else{
+            jThis.addClass("active");
           }
         }else{
           jQuery(this).parent('li').siblings().each(function (i,li){jQuery(li).children('a').removeClass('active')});
+          jQuery(this).addClass('active');
         }
-        jQuery(this).addClass('active');
       });
-      if($('#main').height() < (document.getElementById(that.menuDomId).scrollHeight+11)){
-        $('#main').css("min-height",(document.getElementById(that.menuDomId).scrollHeight+11));
-      }
     }
   }
 
@@ -595,8 +596,6 @@
   exports.createDomainNav=createDomainNav;
   exports.createGroupNav=createGroupNav;
   exports.createAppNav=createAppNav;
-  //exports.changeApp=changeApp;
-  //exports.changeMenu=changeMenu;
   exports.changeGroup=changeGroup;
   exports.changeProfile=changeProfile;
   exports.createProfileNav=createProfileNav;
