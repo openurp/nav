@@ -171,6 +171,10 @@
     },
     activate:function(){
       var that=this;
+      //FIXME treeview someding missing domcument onloading events
+      if(!jQuery("#"+this.menuDomId).data("lte.treeview")){
+         jQuery.fn.Treeview.call(jQuery("#"+this.menuDomId),"init");
+      }
       jQuery("#"+this.menuDomId+" li a").click(function() {
         if(this.href=="javascript:void(0)"){
           jQuery(this).parent('li').siblings().each(function (i,li){
