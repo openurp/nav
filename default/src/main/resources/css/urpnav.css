@@ -1,5 +1,5 @@
 
- @media (max-width: 767px) {
+ @media (max-width: 768px) {
     #top_nav_bar {
       display: none;
     }
@@ -17,7 +17,7 @@
   min-width: 390px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .dropdown-menu.column-3 {
     min-width: 240px !important;
     overflow-x: hidden;

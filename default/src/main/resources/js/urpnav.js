@@ -584,6 +584,16 @@
   function setup (params) {
     jQuery("body").addClass("sidebar-mini layout-fixed text-sm");
     fetchMessages(params);
+    jQuery("#sticky_header").on("click",function(event){
+      if(this.checked){
+        jQuery('.main-header').addClass("sticky-top");
+      }else{
+        jQuery('.main-header').removeClass("sticky-top");
+      }
+    });
+    jQuery("#page_size_selector").on("change",function(event){
+       beangle.createCookie("pageSize",this.value,100);
+    });
   }
 
   function toggleTopBar(){
