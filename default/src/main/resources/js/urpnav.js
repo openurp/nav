@@ -265,7 +265,7 @@
 
   function DomainNav(nav){
     this.nav=nav;
-    this.groupTemplate='<li class="nav-item {active_class}"><a class="nav-link" href="javascript:void(0)" id="group_{group.id}">{group.title}</a></li>';
+    this.groupTemplate='<li class="nav-item"><a class="nav-link {active_class}" href="javascript:void(0)" id="group_{group.id}">{group.title}</a></li>';
     this.portalTemplate='<li class="nav-item"><a href="{app.url}" class="nav-link" target="_self">{app.title}</a></li>';
 
     /**
@@ -617,4 +617,3 @@
   exports.setup=setup;
   exports.toggleTopBar=toggleTopBar;
 })));
-
