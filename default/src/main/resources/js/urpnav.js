@@ -221,12 +221,12 @@
     var appDropBarID="#app_drop_bar";
     jqueryElem = jQuery(appDropBarID);
     var curGroupId=0;
-    var columRows=Math.ceil(nav.apps.length/3);
-    var content='<div class="row">';
-    var columnApps=[[],[],[]]
     if(!apps){
       apps= nav.apps;
     }
+    var columRows=Math.ceil(apps.length/3);
+    var content='<div class="row">';
+    var columnApps=[[],[],[]]
     for(var i=0;i<apps.length;i++){
       columnApps[Math.floor(i / columRows)].push(apps[i]);
     }
@@ -317,11 +317,11 @@
    */
   function GroupNav(nav){
     this.nav=nav;
-    this.appExternTemplate   ='<li class="nav-item"><a href="{app.url}"  class="nav-link {active_class}" target="_top">{app.title}</a></li>';
-    this.appNavTemplate='<li class="nav-item"><a href="{app.url}"  class="nav-link {active_class}" id="app_{app.id}" >{app.title}</a></li>';
+    this.appExternTemplate   ='<li class="nav-item"><a href="{app.url}"  class="nav-link {active_class}" target="_top" id="app_{app.id}">{app.title}</a></li>';
+    this.appNavTemplate='<li class="nav-item"><a href="{app.url}"  class="nav-link {active_class}" id="app_{app.id}">{app.title}</a></li>';
     //add app in dropdown
     this.dropdownAppExternTemplate   ='<a href="{app.url}"  class="dropdown-item {active_class}" target="_top">{app.title}</a>';
-    this.dropdownAppNavTemplate='<a href="{app.url}"  class="dropdown-item {active_class}" id="app_{app.id}" >{app.title}</a>';
+    this.dropdownAppNavTemplate='<a href="{app.url}"  class="dropdown-item {active_class}" id="app_{app.id}">{app.title}</a>';
     /**
      * 向顶层添加app
      */
@@ -370,11 +370,12 @@
           jQuery("#app_"+app.id).click(function (){changeApp(this);return false;})
         }else{
           if(topMenuMoreHappened){
-            appItem = this.dropdownAppExternTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+            appItem = this.dropdownAppExternTemplate.replace('{app.id}',app.id);
           }else{
-            appItem = this.appExternTemplate.replace('{app.url}',this.nav.processUrl(app.url));
+            appItem = this.appExternTemplate.replace('{app.id}',app.id);
           }
           appItem = appItem.replace('{app.title}',app.title);
+          appItem = appItem.replace('{app.url}',this.nav.processUrl(app.url));
           appItem = appItem.replace('{active_class}',app.name==this.nav.app.name?"active":"");
           jqueryElem.append(appItem);
         }
@@ -485,7 +486,9 @@
     var nav= new Nav(app,portal,domainMenus,params,config);
     navMenu = new DomainNav(nav);
     navMenu.addTopGroups(jQuery('#'+nav.navDomId));
-    navMenu.displayGroupMenus(nav.groups[0].id);
+    if(nav.groups.length>0){
+      navMenu.displayGroupMenus(nav.groups[0].id);
+    }
   }
 
   function createGroupNav(app,portal,domainMenus,params,config){
